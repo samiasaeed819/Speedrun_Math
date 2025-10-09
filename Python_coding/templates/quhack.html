@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Speedrun Math</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='quhack.css') }}">
+        <script src="extra.js"></script>
+        <link href="quhacks.py">
+        <div class="topnav">
+            <a><img src="{{ url_for('static', filename='logo.png') }}"></a>
+            <a class="active" >Home</a>
+            <a href="quhack2.html">Addition</a>
+            <a href="quhack3.html">Subtraction</a>
+            <a href="quhack4.html">Multiplication</a>
+            <a href="quhack5.html">Division</a>
+            <a href="quhack6.html">Mixed</a>
+            <a href="quhack7.html">About</a>
+
+          </div>
+    </head>
+    <body>
+        <div class="all">
+                <br>
+                <h1 id="h1"> Welcome to Speed run Math!</h1>
+
+                <h3>Select one of the buttons below to start playing, or navigate to a different page by using the bar at the top. Then, insert a maximum number for the range of the problems, which can determine difficulty. 
+                    After that solve the math equation provided. Depending on your answer the patfor will give you feedbak, and suggest more.</h3>
+                    <h1 id="h1"> Thanks for visiting & Have Fun Playing.</h1>
+                <div id="btn">
+                    <a href="quhack2.html"><button class="btn" type="button" >Addition</button></a>
+                    <a href="quhack3.html"><button class="btn" type="button" >Subtraction</button></a>
+                    <a href="quhack4.html"><button class="btn" type="button" >Multiplication</button></a>
+                    <a href="quhack5.html"><button class="btn" type="button" >Division</button></a>
+                    <a href="quhack6.html"><button class="btn" type="button" >Mixed</button></a>                       
+                </div>
+
+                <img src="{{ url_for('static', filename='mainpage.png') }}" width="100%">
+        </div>
+        <div class="credits">
+            <p>Website Made By: Samia Saeed    
+                <br>
+                 </p>
+
+        </div>
+
+
+
+    </body>
+</html>
