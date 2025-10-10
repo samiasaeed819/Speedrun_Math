@@ -412,7 +412,7 @@ def generate_problem_div(max_number):
                         pass
 
     # If no valid problem found, default to something simple
-    return "4 / 2 = ?", 2
+    return "4 / 2 = ?", 2 , 0
     
 
 @app.route('/reset', methods=['GET'])
