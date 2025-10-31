@@ -267,7 +267,7 @@ def index_multi():
             return render_template('quhack4.html', 
                                    problem=True, 
                                    problem_str=problem_str,
-                                   message=None)
+                                   message=None) 
         else:
                 # User submitted an answer
                 user_answer_str = request.form.get('user_answer', '').strip()
