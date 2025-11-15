@@ -193,3 +193,18 @@ h2 {
     margin-top: 20px;
     margin-bottom: 20px;
   }
+
+  .btn2{
+    text-align: center;
+    border-radius: 15px;
+    border: solid 3px #f17105;
+    background-color: #FFB27F;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-style: italic;
+    font-weight: bold;
+    padding: 12px;
+    margin-left: 30px;
+    margin-right: 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
