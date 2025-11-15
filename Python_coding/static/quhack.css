@@ -1,11 +1,11 @@
 body{
-    background-color: rgb(50, 7, 78);
+    background-color: rgb(75, 13, 117);
     margin-left: 80px;
     margin-right: 80px;
 }
 
 .topnav {
-    background-color:rgb(155, 202, 155);
+    background-color:rgb(246, 134, 7);
     overflow: hidden;
     border-radius: 20px;
   }
@@ -13,7 +13,7 @@ body{
   /* Style the links inside the navigation bar */
   .topnav a {
     float: left;
-    color: rgb(0, 0, 0);
+    color: rgb(223, 96, 28);
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
@@ -22,20 +22,20 @@ body{
   
   /* Change the color of links on hover */
   .topnav a:hover {
-    background-color: rgb(153, 212, 153);
-    color: rgb(0, 0, 0);
+    background-color: #FFDAC6;
+    color: rgb(255, 255, 255);
   }
   
   /* Add a color to the active/current link */
   .topnav a.active {
-    background-color: rgb(144, 216, 144);
-    color: rgb(0, 0, 0);
+    background-color: #FFB27F;
+    color: rgb(255, 252, 252);
   }
 
 .btn {
     border-radius: 15px;
-    border: solid 3px teal;
-    background-color: rgb(192, 236, 192);
+    border: solid 3px #f17105;
+    background-color: #FFB27F;
     font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     font-style: italic;
     font-weight: bold;
@@ -58,15 +58,14 @@ body{
   display: block;
   margin-left:auto ;
   margin-right: auto;
-
 }
 h1 {
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    color: rgb(3, 53, 45);
+    color: rgb(225, 225, 225);
 }
 
 .h1 {
-  color: rgb(11, 99, 84);
+  color: rgb(242, 244, 243);
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 
 }
