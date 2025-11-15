@@ -31,9 +31,9 @@
 #       return "Your name is "+first_name
 #     return render_template("quhack5.html")
 
-# @app.route('/quhack6.html', methods =["GET", "POST"])
-# def mixing():
-#     if request.method == "POST":        
-#       first_name = request.form.get("fname")
-#       return "Your name is "+first_name
-#     return render_template("quhack6.html")
+## @app.route('/quhack6.html', methods =["GET", "POST"])
+ ##def mixing():
+   #  if request.method == "POST":        
+    #    first_name = request.form.get("fname")
+   #     return "Your name is "+first_name
+   #   return render_template("quhack6.html")##
