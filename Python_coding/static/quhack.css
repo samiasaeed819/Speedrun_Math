@@ -13,7 +13,7 @@ body{
   /* Style the links inside the navigation bar */
   .topnav a {
     float: left;
-    color: rgb(223, 96, 28);
+    color: rgb(0, 0, 0);
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
@@ -23,13 +23,13 @@ body{
   /* Change the color of links on hover */
   .topnav a:hover {
     background-color: #FFDAC6;
-    color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
   }
   
   /* Add a color to the active/current link */
   .topnav a.active {
     background-color: #FFB27F;
-    color: rgb(255, 252, 252);
+    color: rgb(0, 0, 0);
   }
   .again{
     padding:0px;
@@ -75,6 +75,7 @@ h1 {
 }
 
 h3 {
+  color:white;
     font-weight: lighter;
     font-style: italic;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
@@ -157,5 +158,5 @@ a {
 h2 {
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   font-style: italic;
-  color: rgb(6, 61, 56);
+  color: rgb(255, 255, 255);
 }
