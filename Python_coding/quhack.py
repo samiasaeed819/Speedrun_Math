@@ -548,9 +548,125 @@ def reset_all():
 ###############################################################################################################
 ############## Test #####################
 
-                        <label for="max_number">Number of Questions:</label>
-                        <input type="text" name="max_number" id="max_number" placeholder="e.g., 10" required />
+                        #<label for="question_number">Number of Questions:</label>
+                        #<input type="text" name="question_number" id="question_numberr" placeholder="e.g., 10" required />
 
+
+@app.route('/quhack8.html', methods =["GET", "POST"])
+@app.route('/all', methods=['GET', 'POST'])
+def index_all():
+    if request.method == 'POST':
+        # Distinguish between setting max_number, question_number and checking answer
+        if 'max_number' in request.form:
+            max_str = request.form['max_number'].strip()
+            if not max_str.isdigit():
+                return render_template('quhack8.html', problem=False, message="Please enter a valid integer for max number.") 
+                                   
+            max_number = int(max_str)
+            # Generate the problem
+            problem_str, solution = generate_problem_all(max_number)
+
+
+            session['problem_str'] = problem_str
+            session['solution'] = solution
+            session['max_number'] = max_number
+
+            return render_template('quhack6.html', 
+                                   problem=True, 
+                                   problem_str=problem_str,
+                                   message=None)
+        else:
+                # User submitted an answer
+                user_answer_str = request.form.get('user_answer', '').strip()
+                if not user_answer_str.isdigit():
+                    # Invalid input, show the same problem again
+                    problem_str = session.get('problem_str')
+                    return render_template('quhack8.html',
+                                        problem=True,
+                                        problem_str=problem_str,
+                                        message="Please enter a valid integer answer.")
+
+                user_answer = int(user_answer_str)
+                correct_answer = session.get('solution')
+                if user_answer == correct_answer:
+                    message = "Correct!"
+                else:
+                    message = f"Incorrect. The correct answer was {correct_answer}."
+                return render_template('quhack8.html', 
+                                    problem=False, 
+                                    message=message)
+
+
+    # GET request: prompt for max number
+    return render_template('quhack8.html', problem=False, message=None)
+            
+def generate_problem_all(max_number):
+    # We have 8 types of problems:
+    problem_type = random.choice([1,2,3,4,5,6,7,8])
+    
+    for _ in range(100):
+        a = random.randint(0, max_number)
+        b = random.randint(0, max_number)
+        
+        if problem_type == 8:
+            # a / b = ?
+            c = int(a/b)
+            if c <= max_number:
+                if b != 0:    
+                    return f"{a} / {b} = ?", c, 
+                else:
+                    pass
+        elif problem_type == 7:
+            # a x b = ?
+            c = a * b
+            if c <= max_number:
+                return f"{a} x {b} = ?", c  
+        elif problem_type == 1:
+            # a + b = ?
+            c = a + b
+            if c <= max_number:
+                return f"{a} + {b} = ?", c
+
+        elif problem_type == 2:
+            # a + ? = c
+            c = random.randint(0, max_number)
+            missing = c - a
+            if missing <= max_number:
+                return f"{a} + ? = {c}", missing
+
+        elif problem_type == 3:
+            # ? + b = c
+            c = random.randint(0, max_number)
+            missing = c - b
+            if 0 <= missing <= max_number:
+                return f"? + {b} = {c}", missing     
+        elif problem_type == 4:
+            # a - b = ?
+            c = a - b
+            if 0 <= c <= max_number:
+                return f"{a} - {b} = ?", c
+
+        elif problem_type == 5:
+            # a - ? = c
+            c = random.randint(0, max_number)
+            missing = a - c
+            if 0 <= missing <= max_number:
+                return f"{a} - ? = {c}", missing
+
+        elif problem_type == 6:
+            # ? - b = c
+            c = random.randint(0, max_number)
+            missing = b + c
+            if 0 <= missing <= max_number:
+                return f"? - {b} = {c}", missing 
+
+    # If no valid problem found, default to something simple
+    return "2 + 2", 4
+
+@app.route('/reset', methods=['GET'])
+def reset_all():
+    session.clear()
+    return render_template('quhack8.html')
 
 if __name__=='__main__':
    app.run(debug=True)
