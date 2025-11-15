@@ -36,6 +36,10 @@ def mix():
 def about():
     return render_template('quhack7.html')
 
+@app.route('/quhack9.html')
+def assement():
+    return render_template('quhack9.html')
+
 
 
 max_number = 0
