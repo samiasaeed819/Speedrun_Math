@@ -544,6 +544,14 @@ def reset_all():
     session.clear()
     return render_template('quhack6.html')
 
+
+###############################################################################################################
+############## Test #####################
+
+                        <label for="max_number">Number of Questions:</label>
+                        <input type="text" name="max_number" id="max_number" placeholder="e.g., 10" required />
+
+
 if __name__=='__main__':
    app.run(debug=True)
 
