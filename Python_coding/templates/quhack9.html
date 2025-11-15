@@ -6,26 +6,30 @@
         <script src="extra.js"></script>
         <link href="quhack.py">
         <div class="topnav">
-            <a class="active" >Home</a>
+            <a>Home</a>
             <a href="quhack2.html">Addition</a>
             <a href="quhack3.html">Subtraction</a>
             <a href="quhack4.html">Multiplication</a>
             <a href="quhack5.html">Division</a>
             <a href="quhack6.html">Mixed</a>
-            <a href="quhack9.html">Self Assesment</a>
+            <a class="active" href="quhack9.html">Self Assesment</a>
             <a href="quhack7.html">About</a>
           </div>
     </head>
     <body>
+<div class="Head">
 <h1>Self Assesment</h1>
+</div>
+<div class="Question">
  <form action="submission.php"></form>
- Number of Questions Answered:<input type="text" name="number">
+ Number of Questions Answered:<input class="btn1" type="text" name="number">
  <br>
  <br>
- Number of Questions Correct:<input type="text" name="correct">
+ Number of Questions Correct:<input class="btn1" type="text" name="correct">
  <br>
  <br>
- Number of Questions Incorrect:<input type="text" name="incorrect">
+ Number of Questions Incorrect:<input class="btn1" type="text" name="incorrect">
+ </div>
  <br>
  <br>
  <div class="Type">
@@ -38,7 +42,12 @@
  </div>
  <br>
 <br>
-<input type="submit" value="send">
-<input type="reset" value="reset">
+<div style="text-align:center;">
+<input class="btn1" type="submit" value="send">
+</div>
+
+<div style="text-align:center;">
+<input class="btn2" type="reset" value="reset">
+</div>
     </body>
 <html>
