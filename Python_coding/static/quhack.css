@@ -180,6 +180,7 @@ h2 {
 }
 
 .btn1{
+    text-align: center;
     border-radius: 15px;
     border: solid 3px #f17105;
     background-color: #FFB27F;
@@ -191,5 +192,4 @@ h2 {
     margin-right: 30px;
     margin-top: 20px;
     margin-bottom: 20px;
-    text-align: center;
   }
