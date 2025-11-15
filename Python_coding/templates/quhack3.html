@@ -27,7 +27,7 @@
             {% if problem %}
                 <p><h1 class="h1">Problem: {{ problem_str }}</h1></p>
                 {% if message %}
-                    <p style="color:rgb(8, 75, 59);">{{ message }}</p>
+                    <p style="color:white;">{{ message }}</p>
                 {% endif %}
                 <form method="POST" action="/sub">
                     <input  class="submit" type="text" name="user_answer" placeholder="Your answer here" />
@@ -37,7 +37,7 @@
             <!-- If we are not currently showing a problem -->
             {% else %}
                 {% if message %}
-                    <p style="color:rgb(7, 96, 68);">{{ message }}</p>
+                    <p style="color:white;">{{ message }}</p>
                     <p>
                         <a href="quhack3.html">
                             <button  type="submit" class="submit" >Reset</button>
