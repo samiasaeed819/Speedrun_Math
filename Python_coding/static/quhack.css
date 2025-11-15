@@ -96,8 +96,8 @@ label {
 
 #max_number {
   border-radius: 15px;
-  border: solid 3px teal;
-  background-color: rgb(192, 236, 192);
+  border: solid 3px rgb(255, 201, 53);
+  background-color: rgb(234, 132, 30);
   font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   font-style: italic;
   font-weight: bold;
@@ -112,8 +112,8 @@ label {
 
 .submit {
   border-radius: 15px;
-  border: solid 3px teal;
-  background-color: rgb(192, 236, 192);
+  border: solid 3px rgb(255, 201, 53);
+  background-color: rgb(234, 132, 30);
   font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   font-style: italic;
   font-weight: bold;
