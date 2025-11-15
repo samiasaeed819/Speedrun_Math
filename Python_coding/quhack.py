@@ -242,7 +242,7 @@ def generate_problem(max_number):
 @app.route('/reset', methods=['GET'])
 def reset():
     session.clear()
-    return render_template('quhack2.html')
+    return render_template('POST')
 
 #########################################################################################################
 
