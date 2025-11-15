@@ -163,3 +163,17 @@ h2 {
   font-style: italic;
   color: rgb(255, 255, 255);
 }
+
+.Question{
+  color:white;
+  text-align: center;
+}
+
+.Type{
+  color:white;
+  text-align: center;
+}
+
+.Sub{
+  text-align: center;
+}
