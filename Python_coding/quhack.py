@@ -95,7 +95,7 @@ def index_sub():
                                    message=message)
 
     # GET request: prompt for max number
-    return render_template('GET', problem=False, message=None)
+    return render_template('quhack3.html', problem=False, message=None)
             
 def generate_problem_sub(max_number):
     # We have 6 types of problems:
@@ -141,7 +141,7 @@ def generate_problem_sub(max_number):
 @app.route('/reset', methods=['GET'])
 def reset_sub():
     session.clear()
-    return render_template('GET')
+    return render_template('quhack3.html')
 
 
 
