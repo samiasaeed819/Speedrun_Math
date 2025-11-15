@@ -23,19 +23,19 @@ body{
   /* Change the color of links on hover */
   .topnav a:hover {
     background-color: #FFDAC6;
-    color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
   }
   
   /* Add a color to the active/current link */
   .topnav a.active {
     background-color: #FFB27F;
-    color: rgb(0, 0, 0);
+    color: rgb(255, 252, 252);
   }
 
 .btn {
     border-radius: 15px;
     border: solid 3px #f17105;
-    background-color: #002500;
+    background-color: #FFB27F;
     font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     font-style: italic;
     font-weight: bold;
