@@ -544,6 +544,8 @@ def reset_all():
     session.clear()
     return render_template('quhack6.html')
 
+
+
 if __name__=='__main__':
    app.run(debug=True)
 
