@@ -132,6 +132,7 @@ label {
 p {
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   font-size: larger;
+  color: white;
 }
 
 img {
@@ -153,6 +154,7 @@ a {
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   font-weight: 200;
   font-size: larger;
+  color:white;
 }
 
 h2 {
