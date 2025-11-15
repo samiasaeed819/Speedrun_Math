@@ -14,6 +14,8 @@ app.secret_key = "a_very_secret_key_for_session"  # Replace with a secure key in
 def home():
     return render_template('quhack.html')
 
+
+
 @app.route('/quhack3.html')
 def sub():
     return render_template('quhack3.html')
@@ -33,15 +35,6 @@ def mix():
 @app.route('/quhack7.html')
 def about():
     return render_template('quhack7.html')
-
-@app.route('/quhack8.html')
-def about():
-    return render_template('quhack8.html')
-
-@app.route('/quhack9.html')
-def about():
-    return render_template('quhack9.html')
-
 
 
 max_number = 0
@@ -550,6 +543,8 @@ def generate_problem_all(max_number):
 def reset_all():
     session.clear()
     return render_template('quhack6.html')
+
+
 
 if __name__=='__main__':
    app.run(debug=True)
