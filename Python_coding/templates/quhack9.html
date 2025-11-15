@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Speedrun Math</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='quhack.css') }}">
+        <script src="extra.js"></script>
+        <link href="quhacks.py">
+        <div class="topnav">
+            <a> <div class="again"><img width="5%" height = "5%" src="{{ url_for('static', filename='logo.png') }}"> </div></a>
+            <a class="active" >Home</a>
+            <a href="quhack2.html">Addition</a>
+            <a href="quhack3.html">Subtraction</a>
+            <a href="quhack4.html">Multiplication</a>
+            <a href="quhack5.html">Division</a>
+            <a href="quhack6.html">Mixed</a>
+            <a href="quhack9.html">Self Assesment</a>
+            <a href="quhack7.html">About</a>
+          </div>
+    </head>
+    <body>
+<h1>Self Assesment</h1>
+ <form action="submission.php"></form>
+ Number of Questions Answered:<input type="text" name="number">
+ <br>
+ <br>
+ Number of Questions Correct:<input type="text" name="correct">
+ <br>
+ <br>
+ Number of Questions Incorrect:<input type="text" name="incorrect">
+ <br>
+ <br>
+ <div class="Type">
+    <h2>What Skill Did You Practice?</h2>
+    <input type="checkbox" name="option1" value="cocacola"><label>Addition</label>
+    <input type="checkbox" name="option1" value="cocacola"><label>Subtraction</label>
+    <input type="checkbox" name="option1" value="cocacola"><label>Multiplication</label>
+    <input type="checkbox" name="option1" value="cocacola"><label>Division</label>
+    <input type="checkbox" name="option1" value="cocacola"><label>Mixed</label>
+ </div>
+ <br>
+<br>
+<input type="submit" value="send">
+<input type="reset" value="reset">
+    </body>
+<html>
