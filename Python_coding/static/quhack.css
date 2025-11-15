@@ -31,7 +31,11 @@ body{
     background-color: #FFB27F;
     color: rgb(255, 252, 252);
   }
-
+  .again{
+    padding:0px;
+    margin:0px;
+  
+  }
 .btn {
     border-radius: 15px;
     border: solid 3px #f17105;
