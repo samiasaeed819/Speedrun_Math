@@ -49,88 +49,131 @@ max_number = 0
 
  ## Subtraction ###################
 
+# --------------------------------------------------------
+# PROBLEM GENERATOR  (MUST COME BEFORE ROUTES)
+# --------------------------------------------------------
+def generate_problem_sub(max_number):
+    # Types:
+    # 4) a - b = ?
+    # 5) a - ? = c
+    # 6) ? - b = c
 
-@app.route('/quhack3.html', methods =["GET", "POST"])
-@app.route('/sub', methods=['GET', 'POST'])
+    problem_type = random.choice([4, 5, 6])
+
+    for _ in range(100):
+        a = random.randint(0, max_number)
+        b = random.randint(0, max_number)
+
+        if problem_type == 4:
+            c = a - b
+            if 0 <= c <= max_number:
+                return f"{a} - {b} = ?", c
+
+        elif problem_type == 5:
+            c = random.randint(0, max_number)
+            missing = a - c
+            if 0 <= missing <= max_number:
+                return f"{a} - ? = {c}", missing
+
+        elif problem_type == 6:
+            c = random.randint(0, max_number)
+            missing = b + c
+            if 0 <= missing <= max_number:
+                return f"? - {b} = {c}", missing
+
+    return "4 - 2 = ?", 2
+
+
+# --------------------------------------------------------
+# SUBTRACTION ROUTE
+# --------------------------------------------------------
+@app.route('/quhack3.html', methods=["GET", "POST"])
+@app.route('/sub', methods=["GET", "POST"])
 def index_sub():
-    if request.method == 'POST':
 
-        # ---------- STEP 1: User submits max number + question count ----------
-        if 'max_number' in request.form and 'num_questions' in request.form:
-            max_str = request.form['max_number'].strip()
-            count_str = request.form['num_questions'].strip()
+    # ----------------------------------------------------
+    # USER JUST SUBMITTED max_number + num_questions
+    # ----------------------------------------------------
+    if request.method == "POST" and "max_number" in request.form and "num_questions" in request.form:
+        max_str = request.form['max_number'].strip()
+        count_str = request.form['num_questions'].strip()
 
-            if not max_str.isdigit() or not count_str.isdigit():
-                return render_template('quhack3.html', problem=False, 
-                                       message="Please enter valid whole numbers.")
+        if not max_str.isdigit() or not count_str.isdigit():
+            return render_template("quhack3.html", problem=False,
+                                   message="Please enter valid whole numbers.")
 
-            max_number = int(max_str)
-            total_questions = int(count_str)
+        max_number = int(max_str)
+        total_questions = int(count_str)
 
-            # Initialize tracking
-            session['max_number'] = max_number
-            session['total_questions'] = total_questions
-            session['questions_answered'] = 0
-            session['results'] = []
+        # Initialize session tracking
+        session['max_number'] = max_number
+        session['total_questions'] = total_questions
+        session['questions_answered'] = 0
+        session['results'] = []
 
-            # Generate first problem
-            problem_str, solution = generate_problem_sub(max_number)
-            session['problem_str'] = problem_str
-            session['solution'] = solution
+        # Generate first problem
+        p_str, sol = generate_problem_sub(max_number)
+        session['problem_str'] = p_str
+        session['solution'] = sol
 
-            return render_template('quhack3.html',
+        return render_template("quhack3.html", problem=True, problem_str=p_str)
+
+    # ----------------------------------------------------
+    # USER ANSWERS A PROBLEM
+    # ----------------------------------------------------
+    if request.method == "POST" and "user_answer" in request.form:
+        answer_str = request.form.get("user_answer", "").strip()
+
+        if not answer_str.isdigit():
+            return render_template("quhack3.html",
                                    problem=True,
-                                   problem_str=problem_str,
-                                   message=None)
+                                   problem_str=session.get("problem_str"),
+                                   message="Enter a valid integer.")
 
-        # ---------- STEP 2: User answers a question ----------
-        elif 'user_answer' in request.form:
-            user_answer_str = request.form.get('user_answer', '').strip()
+        user_answer = int(answer_str)
+        correct_answer = session.get("solution")
+        problem_str = session.get("problem_str")
 
-            if not user_answer_str.isdigit():
-                return render_template('quhack3.html',
-                                       problem=True,
-                                       problem_str=session.get('problem_str'),
-                                       message="Enter a valid integer.")
+        # Record result
+        results = session.get("results", [])
+        results.append({
+            "problem": problem_str,
+            "your_answer": user_answer,
+            "correct_answer": correct_answer,
+            "status": "Correct" if user_answer == correct_answer else "Incorrect"
+        })
+        session['results'] = results
 
-            user_answer = int(user_answer_str)
-            correct_answer = session.get('solution')
-            problem_str = session.get('problem_str')
+        # Increment count
+        session['questions_answered'] += 1
 
-            # Save result
-            results = session.get('results', [])
-            results.append({
-                "problem": problem_str,
-                "your_answer": user_answer,
-                "correct_answer": correct_answer,
-                "status": "Correct" if user_answer == correct_answer else "Incorrect"
-            })
-            session['results'] = results
+        # If done → show summary
+        if session['questions_answered'] >= session['total_questions']:
+            return render_template("quhack3.html", 
+                                   problem=False, 
+                                   results=results)
 
-            # Increment count
-            session['questions_answered'] += 1
+        # Otherwise, generate next problem
+        max_number = session.get("max_number")
+        p_str, sol = generate_problem_sub(max_number)
+        session['problem_str'] = p_str
+        session['solution'] = sol
 
-            # ---------- STEP 3: If all questions done, show summary ----------
-            if session['questions_answered'] >= session['total_questions']:
-                return render_template('quhack3.html',
-                                       problem=False,
-                                       message=None,
-                                       results=results)   # NEW
+        return render_template("quhack3.html", problem=True, problem_str=p_str)
 
-            # ---------- STEP 4: Otherwise generate next problem ----------
-            max_number = session.get('max_number')
-            new_problem, new_solution = generate_problem_sub(max_number)
-            session['problem_str'] = new_problem
-            session['solution'] = new_solution
+    # ----------------------------------------------------
+    # GET request (first page load)
+    # ----------------------------------------------------
+    return render_template("quhack3.html", problem=False, message=None)
 
-            return render_template('quhack3.html',
-                                   problem=True,
-                                   problem_str=new_problem,
-                                   message=None)
 
-    # GET request
-    return render_template('quhack3.html', problem=False, message=None)
-
+# --------------------------------------------------------
+# RESET ROUTE
+# --------------------------------------------------------
+@app.route('/reset')
+def reset_sub():
+    session.clear()
+    return render_template('quhack3.html')
 
 #########################################################################################################
 
