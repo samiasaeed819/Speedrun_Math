@@ -180,84 +180,98 @@ def reset_sub():
 
  ## Adition ###################
 
+@app.route("/add", methods=["GET", "POST"])
+def add():
+    # setup game if no session
+    if "problems" not in session:
+        session["problems"] = []
+        session["current"] = 0
+        session["results"] = []
+        session["max_number"] = None
+        session["num_questions"] = None
 
-@app.route('/add', methods=['GET', 'POST'])
-@app.route('/quhack2.html', methods=['GET', 'POST'])
-def index_add():
-    if request.method == 'POST':
+    # If GET → just show page
+    if request.method == "GET":
+        return render_template("quhack2.html")
 
-        # FIRST FORM: user enters max_number + num_questions
-        if 'max_number' in request.form:
-            max_str = request.form['max_number'].strip()
-            num_str = request.form['num_questions'].strip()
+    # POST logic
+    action = request.form.get("action")   # "check" or "hint"
 
-            if not max_str.isdigit() or not num_str.isdigit():
-                return render_template('quhack2.html', problem=False,
-                                       message="Enter valid integers.",
-                                       results=None)
+    # If starting the game
+    if session["max_number"] is None:
+        try:
+            max_num = int(request.form["max_number"])
+            num_q = int(request.form["num_questions"])
+        except:
+            return render_template("quhack2.html",
+                                   message="Please enter valid numbers.")
 
-            max_number = int(max_str)
-            num_questions = int(num_str)
+        # generate problems
+        import random
+        session["problems"] = [(random.randint(0, max_num), random.randint(0, max_num))
+                               for _ in range(num_q)]
+        session["max_number"] = max_num
+        session["num_questions"] = num_q
+        session["current"] = 0
+        session["results"] = []
 
-            session['max_number'] = max_number
-            session['num_questions'] = num_questions
-            session['current_q'] = 0
-            session['results'] = []
+        a, b = session["problems"][0]
+        return render_template("quhack2.html",
+                               problem=True,
+                               problem_str=f"{a} + {b}",
+                               hint=None)
 
-            # generate first problem
-            problem_str, solution = generate_problem_add(max_number)
-            session['problem_str'] = problem_str
-            session['solution'] = solution
+    # If HINT was pressed
+    if action == "hint":
+        a, b = session["problems"][session["current"]]
+        # Simple useful hint:
+        # Show the tens-break addition
+        tens = a + (10 - (a % 10)) if a % 10 != 0 else a  # next round number
+        hint_text = f"Try adding to the nearest 10 first: {a} + {b} → {tens} + (remaining)."
 
-            return render_template('quhack2.html', problem=True,
-                                   problem_str=problem_str,
-                                   results=None)
+        a, b = session["problems"][session["current"]]
+        return render_template("quhack2.html",
+                               problem=True,
+                               problem_str=f"{a} + {b}",
+                               hint=hint_text)
 
-        # SECOND FORM: user answers a question
-        else:
-            ans_str = request.form.get('user_answer', '').strip()
+    # Otherwise, user clicked CHECK
+    user_answer = request.form.get("user_answer", "").strip()
 
-            if not ans_str.isdigit():
-                return render_template('quhack2.html', problem=True,
-                                       problem_str=session['problem_str'],
-                                       message="Enter a valid integer.",
-                                       results=None)
+    # Validate
+    if not user_answer.isdigit():
+        a, b = session["problems"][session["current"]]
+        return render_template("quhack2.html",
+                               message="Please enter a number.",
+                               problem=True,
+                               problem_str=f"{a} + {b}")
 
-            user_answer = int(ans_str)
-            correct = session['solution']
+    user_answer = int(user_answer)
+    a, b = session["problems"][session["current"]]
+    correct = a + b
 
-            # store result
-            session['results'].append({
-                "problem": session['problem_str'],
-                "your_answer": user_answer,
-                "correct_answer": correct,
-                "status": "Correct" if user_answer == correct else "Incorrect"
-            })
+    # record result
+    session["results"].append({
+        "problem": f"{a} + {b}",
+        "your_answer": user_answer,
+        "correct_answer": correct,
+        "status": "Correct" if user_answer == correct else "Incorrect"
+    })
 
-            session['current_q'] += 1
+    session["current"] += 1
 
-            # finished all questions
-            if session['current_q'] >= session['num_questions']:
-                return render_template("quhack2.html", problem=False,
-                                       results=session['results'],
-                                       message=None)
+    # Game finished?
+    if session["current"] >= session["num_questions"]:
+        results = session["results"]
+        session.clear()
+        return render_template("quhack2.html", results=results)
 
-            # generate next
-            problem_str, solution = generate_problem_add(session['max_number'])
-            session['problem_str'] = problem_str
-            session['solution'] = solution
+    # next problem
+    a, b = session["problems"][session["current"]]
+    return render_template("quhack2.html",
+                           problem=True,
+                           problem_str=f"{a} + {b}")
 
-            return render_template("quhack2.html", problem=True,
-                                   problem_str=problem_str,
-                                   results=None)
-
-    return render_template("quhack2.html", problem=False, results=None)
-
-
-def generate_problem_add(max_number):
-    a = random.randint(0, max_number)
-    b = random.randint(0, max_number)
-    return f"{a} + {b} = ?", a + b
 
 
  #########################################################################################################

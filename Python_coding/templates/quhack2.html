@@ -29,9 +29,18 @@
                 {% endif %}
 
                 <form method="POST" action="/add">
-                    <input class="btn1" type="text" name="user_answer" placeholder="Your answer here" />
-                    <button class="submit" type="submit">Check</button>
+                    <input class="submit" type="text" name="user_answer" placeholder="Your answer here" />
+
+                    <button class="submit" type="submit" name="action" value="check">Check</button>
+
+                    <!-- NEW HINT BUTTON -->
+                    <button class="submit" type="submit" name="action" value="hint">Hint</button>
                 </form>
+
+                {% if hint %}
+                    <p style="color:rgb(243, 193, 137);">Hint: {{ hint }}</p>
+                {% endif %}
+
 
             {% else %}
 
