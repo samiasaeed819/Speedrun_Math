@@ -279,50 +279,90 @@ def index_add():
 
  ## Multiplication###################
 
-@app.route("/mul", methods=["GET", "POST"])
+# ----------------------------
+# Multiplication Problem Generator
+# ----------------------------
+def generate_problem_mul(max_number):
+    a = random.randint(0, max_number)
+    b = random.randint(0, max_number)
+    return (a, b)
+
+# ----------------------------
+# Multiplication Route
+# ----------------------------
+@app.route('/mul', methods=["GET", "POST"])
 def multiplication():
-    if "problems" not in session:
-        session["problems"] = [(random.randint(2,12), random.randint(2,12)) for _ in range(10)]
-        session["current"] = 0
-        session["score"] = 0
-        session["results"] = []
-
     if request.method == "POST":
-        action = request.form.get("action")
-        a, b = session["problems"][session["current"]]
+        action = request.form.get("action", "")
 
+        # Initialize problems
+        if "max_number" in request.form and "num_questions" in request.form:
+            max_number = int(request.form["max_number"])
+            total_questions = int(request.form["num_questions"])
+
+            problems = [generate_problem_mul(max_number) for _ in range(total_questions)]
+            session["problems"] = problems
+            session["current"] = 0
+            session["results"] = []
+            session["max_number"] = max_number
+            session["total_questions"] = total_questions
+
+        # Safety check
+        if "problems" not in session or session["current"] >= len(session["problems"]):
+            return render_template("quhack4.html", problem=False, results=session.get("results", []))
+
+        current_index = session["current"]
+        a, b = session["problems"][current_index]
+
+        # -------------------
+        # Hint requested
+        # -------------------
         if action == "hint":
-            answer = a * b
-            low = answer - 5
-            high = answer + 5
-            hint_text = f"The correct answer is between {low} and {high}."
-            return render_template("quhack4.html", problem_str=f"{a} × {b} = ?", 
-                                   current=session["current"]+1, score=session["score"], hint=hint_text)
+            low = max(a * b - 5, 0)
+            high = a * b + 5
+            hint_text = f"The answer is between {low} and {high}."
+            return render_template("quhack4.html", problem_str=f"{a} × {b} = ?", hint=hint_text)
 
-        user_answer = request.form.get("user_answer")
-        if user_answer and user_answer.isdigit():
-            user_answer = int(user_answer)
+        # -------------------
+        # User submitted answer
+        # -------------------
+        if "user_answer" in request.form:
+            user_answer_str = request.form.get("user_answer", "").strip()
+            if not user_answer_str.isdigit():
+                return render_template(
+                    "quhack4.html",
+                    problem_str=f"{a} × {b} = ?",
+                    message="Enter a valid integer."
+                )
+            user_answer = int(user_answer_str)
             correct_answer = a * b
-            status = "Correct" if user_answer == correct_answer else "Incorrect"
-            session["results"].append({
+
+            # Record result
+            results = session.get("results", [])
+            results.append({
                 "problem": f"{a} × {b} = ?",
                 "your_answer": user_answer,
                 "correct_answer": correct_answer,
-                "status": status
+                "status": "Correct" if user_answer == correct_answer else "Incorrect"
             })
-            if user_answer == correct_answer:
-                session["score"] += 1
+            session["results"] = results
 
-        session["current"] += 1
-        if session["current"] >= len(session["problems"]):
-            final_results = session["results"]
-            score = session["score"]
-            session.clear()
-            return render_template("quhack4_result.html", results=final_results, score=score)
+            # Move to next question
+            session["current"] += 1
 
-    a, b = session["problems"][session["current"]]
-    return render_template("quhack4.html", problem_str=f"{a} × {b} = ?", 
-                           current=session["current"]+1, score=session["score"])
+            # If all done, show summary
+            if session["current"] >= session["total_questions"]:
+                return render_template("quhack4.html", problem=False, results=results)
+
+        # -------------------
+        # Show current problem
+        # -------------------
+        if session["current"] < len(session["problems"]):
+            a, b = session["problems"][session["current"]]
+            return render_template("quhack4.html", problem_str=f"{a} × {b} = ?")
+
+    # GET request → show start form
+    return render_template("quhack4.html", problem=False)
 
 
  #########################################################################################################
@@ -331,57 +371,93 @@ def multiplication():
 
  ## Division ###################
 
+# ----------------------------
+# Division Problem Generator
+# ----------------------------
+def generate_problem_div(max_number):
+    while True:
+        b = random.randint(1, max_number)  # avoid division by zero
+        a = random.randint(0, max_number * b)
+        return (a, b)
 
-@app.route("/div", methods=["GET", "POST"])
+# ----------------------------
+# Division Route
+# ----------------------------
+@app.route('/div', methods=["GET", "POST"])
 def division():
-    if "problems" not in session:
-        problems = []
-        for _ in range(10):
-            b = random.randint(2,12)
-            answer = random.randint(2,12)
-            a = b * answer  # ensures clean division
-            problems.append((a, b))
-        session["problems"] = problems
-        session["current"] = 0
-        session["score"] = 0
-        session["results"] = []
-
     if request.method == "POST":
-        action = request.form.get("action")
-        a, b = session["problems"][session["current"]]
+        action = request.form.get("action", "")
 
+        # Initialize problems
+        if "max_number" in request.form and "num_questions" in request.form:
+            max_number = int(request.form["max_number"])
+            total_questions = int(request.form["num_questions"])
+
+            problems = [generate_problem_div(max_number) for _ in range(total_questions)]
+            session["problems"] = problems
+            session["current"] = 0
+            session["results"] = []
+            session["max_number"] = max_number
+            session["total_questions"] = total_questions
+
+        # Safety check
+        if "problems" not in session or session["current"] >= len(session["problems"]):
+            return render_template("quhack5.html", problem=False, results=session.get("results", []))
+
+        current_index = session["current"]
+        a, b = session["problems"][current_index]
+
+        # -------------------
+        # Hint requested
+        # -------------------
         if action == "hint":
-            answer = a // b
-            low = answer - 5
-            high = answer + 5
-            hint_text = f"The correct answer is between {low} and {high}."
-            return render_template("quhack5.html", problem_str=f"{a} ÷ {b} = ?", 
-                                   current=session["current"]+1, score=session["score"], hint=hint_text)
+            quotient = a // b
+            low = max(quotient - 2, 0)
+            high = quotient + 2
+            hint_text = f"The quotient is between {low} and {high}."
+            return render_template("quhack5.html", problem_str=f"{a} ÷ {b} = ?", hint=hint_text)
 
-        user_answer = request.form.get("user_answer")
-        if user_answer and user_answer.isdigit():
-            user_answer = int(user_answer)
+        # -------------------
+        # User submitted answer
+        # -------------------
+        if "user_answer" in request.form:
+            user_answer_str = request.form.get("user_answer", "").strip()
+            if not user_answer_str.isdigit():
+                return render_template(
+                    "quhack5.html",
+                    problem_str=f"{a} ÷ {b} = ?",
+                    message="Enter a valid integer."
+                )
+            user_answer = int(user_answer_str)
             correct_answer = a // b
-            status = "Correct" if user_answer == correct_answer else "Incorrect"
-            session["results"].append({
+
+            # Record result
+            results = session.get("results", [])
+            results.append({
                 "problem": f"{a} ÷ {b} = ?",
                 "your_answer": user_answer,
                 "correct_answer": correct_answer,
-                "status": status
+                "status": "Correct" if user_answer == correct_answer else "Incorrect"
             })
-            if user_answer == correct_answer:
-                session["score"] += 1
+            session["results"] = results
 
-        session["current"] += 1
-        if session["current"] >= len(session["problems"]):
-            final_results = session["results"]
-            score = session["score"]
-            session.clear()
-            return render_template("quhack5_result.html", results=final_results, score=score)
+            # Move to next question
+            session["current"] += 1
 
-    a, b = session["problems"][session["current"]]
-    return render_template("quhack5.html", problem_str=f"{a} ÷ {b} = ?", 
-                           current=session["current"]+1, score=session["score"])
+            # If all done, show summary
+            if session["current"] >= session["total_questions"]:
+                return render_template("quhack5.html", problem=False, results=results)
+
+        # -------------------
+        # Show current problem
+        # -------------------
+        if session["current"] < len(session["problems"]):
+            a, b = session["problems"][session["current"]]
+            return render_template("quhack5.html", problem_str=f"{a} ÷ {b} = ?")
+
+    # GET request → show start form
+    return render_template("quhack5.html", problem=False)
+
 
  #########################################################################################################
 
