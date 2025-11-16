@@ -49,107 +49,95 @@ max_number = 0
 
  ## Subtraction ###################
 
- 
 
 @app.route('/quhack3.html', methods =["GET", "POST"])
 @app.route('/sub', methods=['GET', 'POST'])
 def index_sub():
     if request.method == 'POST':
-        # Distinguish between setting max_number and checking answer
-        if 'max_number' in request.form:
-            max_str = request.form['max_number'].strip()
-            if not max_str.isdigit():
-                return render_template('quhack3.html', problem=False, message="Please enter a valid integer for max number")
-                       
-            max_number = int(max_str)
-            # Generate the problem
-            problem_str, solution = generate_problem_sub(max_number)
 
+        # ---------- STEP 1: User submits max number + question count ----------
+        if 'max_number' in request.form and 'num_questions' in request.form:
+            max_str = request.form['max_number'].strip()
+            count_str = request.form['num_questions'].strip()
+
+            if not max_str.isdigit() or not count_str.isdigit():
+                return render_template('quhack3.html', problem=False, 
+                                       message="Please enter valid whole numbers.")
+
+            max_number = int(max_str)
+            total_questions = int(count_str)
+
+            # Initialize tracking
+            session['max_number'] = max_number
+            session['total_questions'] = total_questions
+            session['questions_answered'] = 0
+            session['results'] = []
+
+            # Generate first problem
+            problem_str, solution = generate_problem_sub(max_number)
             session['problem_str'] = problem_str
             session['solution'] = solution
-            session['max_number'] = max_number
 
-            return render_template('quhack3.html', 
-                                   problem=True, 
+            return render_template('quhack3.html',
+                                   problem=True,
                                    problem_str=problem_str,
                                    message=None)
-        else:
-            # User submitted an answer
+
+        # ---------- STEP 2: User answers a question ----------
+        elif 'user_answer' in request.form:
             user_answer_str = request.form.get('user_answer', '').strip()
+
             if not user_answer_str.isdigit():
-                # Invalid input, show the same problem again
-                problem_str = session.get('problem_str')
                 return render_template('quhack3.html',
                                        problem=True,
-                                       problem_str=problem_str,
-                                       message="Please enter a valid integer answer.")
+                                       problem_str=session.get('problem_str'),
+                                       message="Enter a valid integer.")
 
             user_answer = int(user_answer_str)
             correct_answer = session.get('solution')
-            if user_answer == correct_answer:
-                message = "Correct!"
-            else:
-                message = f"Incorrect. The correct answer was {correct_answer}."
-            return render_template('quhack3.html', 
-                                   problem=False, 
-                                   message=message)
+            problem_str = session.get('problem_str')
 
-    # GET request: prompt for max number
+            # Save result
+            results = session.get('results', [])
+            results.append({
+                "problem": problem_str,
+                "your_answer": user_answer,
+                "correct_answer": correct_answer,
+                "status": "Correct" if user_answer == correct_answer else "Incorrect"
+            })
+            session['results'] = results
+
+            # Increment count
+            session['questions_answered'] += 1
+
+            # ---------- STEP 3: If all questions done, show summary ----------
+            if session['questions_answered'] >= session['total_questions']:
+                return render_template('quhack3.html',
+                                       problem=False,
+                                       message=None,
+                                       results=results)   # NEW
+
+            # ---------- STEP 4: Otherwise generate next problem ----------
+            max_number = session.get('max_number')
+            new_problem, new_solution = generate_problem_sub(max_number)
+            session['problem_str'] = new_problem
+            session['solution'] = new_solution
+
+            return render_template('quhack3.html',
+                                   problem=True,
+                                   problem_str=new_problem,
+                                   message=None)
+
+    # GET request
     return render_template('quhack3.html', problem=False, message=None)
-            
-def generate_problem_sub(max_number):
-    # We have 6 types of problems:
-    # 1) a + b = ?
-    # 2) a + ? = c
-    # 3) ? + b = c
-    # 4) a - b = ?
-    # 5) a - ? = c
-    # 6) ? - b = c
-
-    problem_type = random.choice([4,5,6])
-    
-    for _ in range(100):
-        a = random.randint(0, max_number)
-        b = random.randint(0, max_number)
-
-               
-        if problem_type == 4:
-            # a - b = ?
-            c = a - b
-            if 0 <= c <= max_number:
-                return f"{a} - {b} = ?", c
-
-        elif problem_type == 5:
-            # a - ? = c
-            c = random.randint(0, max_number)
-            missing = a - c
-            if 0 <= missing <= max_number:
-                return f"{a} - ? = {c}", missing
-
-        elif problem_type == 6:
-            # ? - b = c
-            c = random.randint(0, max_number)
-            missing = b + c
-            if 0 <= missing <= max_number:
-                return f"? - {b} = {c}", missing
-            
-    # If no valid problem found, default to something simple
-    return "4-2 = ?", 2
-
- 
-
-@app.route('/reset', methods=['GET'])
-def reset_sub():
-    session.clear()
-    return render_template('quhack3.html')
-
 
 
 #########################################################################################################
 
 
-
  ## Adition ###################
+
+
 @app.route('/quhack2.html', methods =["GET", "POST"])
 @app.route('/add', methods=['GET', 'POST'])
 def index():
@@ -189,7 +177,7 @@ def index():
             user_answer = int(user_answer_str)
             correct_answer = session.get('solution')
             if user_answer == correct_answer:
-                message = "Correct!"
+                message = "Correct!", 
             else:
                 message = f"Incorrect. The correct answer was {correct_answer}."
             return render_template('quhack2.html', 
@@ -201,13 +189,11 @@ def index():
     return render_template('quhack2.html', problem=False, message=None)
             
 def generate_problem(max_number):
-    # We have 6 types of problems:
+    # We have 3 types of problems:
     # 1) a + b = ?
     # 2) a + ? = c
     # 3) ? + b = c
-    # 4) a - b = ?
-    # 5) a - ? = c
-    # 6) ? - b = c
+
 
     problem_type = random.choice([1, 2, 3])
     
