@@ -22,17 +22,19 @@
 
     {% if problem_str %}
         <h1 class="h1">Problem: {{ problem_str }}</h1>
+
+        <form method="POST" action="/mul">
+            <input class="btn1" type="text" name="user_answer" placeholder="Your answer here" />
+            <button class="submit" type="submit">Check</button>
+            <button class="submit" type="submit" name="action" value="hint">Hint</button>
+        </form>
+
         {% if hint %}
             <p style="color:white;">Hint: {{ hint }}</p>
         {% endif %}
         {% if message %}
             <p style="color:white;">{{ message }}</p>
         {% endif %}
-        <form method="POST" action="/mul">
-            <input class="submit" type="text" name="user_answer" placeholder="Your answer here" />
-            <button class="submit" type="submit">Check</button>
-            <button class="submit" type="submit" name="action" value="hint">Hint</button>
-        </form>
 
     {% else %}
         {% if results %}
