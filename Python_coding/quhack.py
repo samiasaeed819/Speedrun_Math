@@ -108,8 +108,8 @@ def subtraction():
         # Hint requested
         # -------------------
         if action == "hint":
-            low = max(a + b - 5, 0)
-            high = a + b + 5
+            low = max((a - b) - 5, 0)
+            high = (a - b) + 5
             hint_text = f"The answer is between {low} and {high}."
             return render_template("quhack3.html", problem_str=f"{a} - {b} = ?", hint=hint_text)
 
@@ -318,8 +318,8 @@ def multiplication():
         # Hint requested
         # -------------------
         if action == "hint":
-            low = max(a * b - 5, 0)
-            high = a * b + 5
+            low = max((a * b) - 5, 0)
+            high = (a * b) + 5
             hint_text = f"The answer is between {low} and {high}."
             return render_template("quhack4.html", problem_str=f"{a} × {b} = ?", hint=hint_text)
 
@@ -412,8 +412,8 @@ def division():
         # -------------------
         if action == "hint":
             quotient = a // b
-            low = max(quotient - 2, 0)
-            high = quotient + 2
+            low = max(quotient - 5, 0)
+            high = quotient + 5
             hint_text = f"The quotient is between {low} and {high}."
             return render_template("quhack5.html", problem_str=f"{a} ÷ {b} = ?", hint=hint_text)
 
