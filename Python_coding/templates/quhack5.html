@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Speedrun Math - Divide</title>
+        <title>Speedrun Math - Division</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='quhack.css') }}">
         <script src="extra.js"></script>
+
         <div class="topnav">
             <a href="/">Home</a>
             <a href="quhack2.html">Addition</a>
@@ -13,61 +14,79 @@
             <a href="quhack6.html">Mixed</a>
             <a href="quhack9.html">Self Assesment</a>
             <a href="quhack7.html">About</a>
-            
-            
-
-          </div>
+        </div>
     </head>
+
     <body>
-        <div class="all"> 
+        <div class="all">
             <h1>Simple Division Practice</h1>
 
-            <!-- If we have a problem to solve -->
             {% if problem %}
-                <p><h1>Problem: {{ problem_str }}</h1></p>
+                <h1 class="h1">Problem: {{ problem_str }}</h1>
+
                 {% if message %}
                     <p style="color:white;">{{ message }}</p>
                 {% endif %}
+
                 <form method="POST" action="/div">
-                    <input type="text"  class="submit" name="user_answer" placeholder="Quotient" />
-                    <input type="text"  class="submit" name="user_answer2" placeholder="Remainder" />
-                    <p>Round to nearest whole integer.</p>
+                    <input class="submit" type="text" name="user_answer" placeholder="Your answer here" />
                     <button class="submit" type="submit">Check</button>
                 </form>
-            
-            <!-- If we are not currently showing a problem -->
+
             {% else %}
-                {% if message %}
+
+                {% if results %}
+                    <h2 style="color:white;">Results</h2>
+
+                    <table style="color:white; border:1px solid white; border-collapse: collapse;">
+                        <tr>
+                            <th>Problem</th>
+                            <th>Your Answer</th>
+                            <th>Correct Answer</th>
+                            <th>Status</th>
+                        </tr>
+
+                        {% for r in results %}
+                        <tr>
+                            <td>{{ r.problem }}</td>
+                            <td>{{ r.your_answer }}</td>
+                            <td>{{ r.correct_answer }}</td>
+                            <td>{{ r.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+
+                    <br>
+                    <a href="quhack5.html">
+                        <button class="submit">Start Over</button>
+                    </a>
+
+                {% elif message %}
                     <p style="color:white;">{{ message }}</p>
-                    <p>
-                        <a href="quhack5.html">
-                            <button  type="submit" class="submit">Reset</button>
-                        </a>
-                    </p>
+                    <a href="quhack5.html"><button class="submit">Reset</button></a>
+
                 {% else %}
                     <form method="POST" action="/div">
-                        <label for="max_number">Enter the maximum number:</label>
-                        <input type="text" name="max_number" id="max_number" placeholder="e.g., 10" required />
-                        <button  class="submit" type="submit">Get Problem</button>
+                        <label>Enter the maximum number:</label>
+                        <input type="text" name="max_number" placeholder="e.g., 10" required />
 
+                        <br><br>
+
+                        <label>How many questions?</label>
+                        <input type="text" name="num_questions" placeholder="e.g., 5" required />
+
+                        <br><br>
+                        <button class="submit" type="submit">Start</button>
                     </form>
                 {% endif %}
-            {% endif %}       
-            <img src="{{ url_for('static', filename='division.png') }}">  
-             <br>
-            <br>
-            <br>
-            <br>
+            {% endif %}
 
-            
+            <img src="{{ url_for('static', filename='division.png') }}">
+            <br><br><br><br>
         </div>
+
         <div class="credits">
-            <p>Website Made By: Samia Saeed and Tanvi Saha   
-                <br>
-                 </p>
-
+            <p>Website Made By: Samia Saeed and Tanvi Saha</p>
         </div>
-
-
     </body>
 </html>
