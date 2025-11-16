@@ -1,92 +1,76 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Speedrun Math - Division</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='quhack.css') }}">
-        <script src="extra.js"></script>
+<head>
+    <title>Speedrun Math - Division</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='quhack.css') }}">
+    <script src="extra.js"></script>
 
-        <div class="topnav">
-            <a href="/">Home</a>
-            <a href="quhack2.html">Addition</a>
-            <a href="quhack3.html">Subtraction</a>
-            <a href="quhack4.html">Multiplication</a>
-            <a class="active" href="quhack5.html">Division</a>
-            <a href="quhack6.html">Mixed</a>
-            <a href="quhack9.html">Self Assesment</a>
-            <a href="quhack7.html">About</a>
-        </div>
-    </head>
+    <div class="topnav">
+        <a href="/">Home</a>
+        <a href="quhack2.html">Addition</a>
+        <a href="quhack3.html">Subtraction</a>
+        <a href="quhack4.html">Multiplication</a>
+        <a class="active" href="quhack5.html">Division</a>
+        <a href="quhack6.html">Mixed</a>
+        <a href="quhack9.html">Self Assessment</a>
+        <a href="quhack7.html">About</a>
+    </div>
+</head>
+<body>
+<div class="all">
+    <h1>Simple Division Practice</h1>
 
-    <body>
-        <div class="all">
-            <h1>Simple Division Practice</h1>
+    {% if problem_str %}
+        <h1 class="h1">Problem: {{ problem_str }}</h1>
+        {% if hint %}
+            <p style="color:white;">Hint: {{ hint }}</p>
+        {% endif %}
+        {% if message %}
+            <p style="color:white;">{{ message }}</p>
+        {% endif %}
+        <form method="POST" action="/div">
+            <input class="submit" type="text" name="user_answer" placeholder="Your answer here" />
+            <button class="submit" type="submit">Check</button>
+            <button class="submit" type="submit" name="action" value="hint">Hint</button>
+        </form>
 
-            {% if problem %}
-                <h1 class="h1">Problem: {{ problem_str }}</h1>
+    {% else %}
+        {% if results %}
+            <h2 style="color:white;">Results</h2>
+            <table style="color:white; border:1px solid white; border-collapse: collapse;">
+                <tr>
+                    <th style="border:1px solid white; padding:5px;">Problem</th>
+                    <th style="border:1px solid white; padding:5px;">Your Answer</th>
+                    <th style="border:1px solid white; padding:5px;">Correct Answer</th>
+                    <th style="border:1px solid white; padding:5px;">Status</th>
+                </tr>
+                {% for r in results %}
+                <tr>
+                    <td style="border:1px solid white; padding:5px;">{{ r.problem }}</td>
+                    <td style="border:1px solid white; padding:5px;">{{ r.your_answer }}</td>
+                    <td style="border:1px solid white; padding:5px;">{{ r.correct_answer }}</td>
+                    <td style="border:1px solid white; padding:5px;">{{ r.status }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <br>
+            <a href="/div"><button class="submit">Start Over</button></a>
 
-                {% if message %}
-                    <p style="color:white;">{{ message }}</p>
-                {% endif %}
-
-                <form method="POST" action="/div">
-                    <input class="btn1" type="text" name="user_answer" placeholder="Your answer here" />
-                    <button class="submit" type="submit">Check</button>
-                </form>
-
-            {% else %}
-
-                {% if results %}
-                    <h2 style="color:white;">Results</h2>
-
-                    <table style="color:white; border:2px solid white; border-collapse: collapse;">
-                        <tr>
-                            <th style="border:2px solid white; padding:5px;">Problem</th>
-                            <th style="border:2px solid white; padding:5px;">Your Answer</th>
-                            <th style="border:2px solid white; padding:5px;">Correct Answer</th>
-                            <th style="border:2px solid white; padding:5px;">Status</th>
-                        </tr>
-
-                        {% for r in results %}
-                        <tr>
-                            <td style="border:2px solid white; padding:5px;">{{ r.problem }}</td>
-                            <td style="border:2px solid white; padding:5px;">{{ r.your_answer }}</td>
-                            <td style="border:2px solid white; padding:5px;">{{ r.correct_answer }}</td>
-                            <td style="border:2px solid white; padding:5px;">{{ r.status }}</td>
-                        </tr>
-                        {% endfor %}
-                    </table>
-
-                    <br>
-                    <a href="quhack5.html">
-                        <button class="submit">Start Over</button>
-                    </a>
-
-                {% elif message %}
-                    <p style="color:white;">{{ message }}</p>
-                    <a href="quhack5.html"><button class="submit">Reset</button></a>
-
-                {% else %}
-                    <form method="POST" action="/div">
-                        <label>Enter the maximum number:</label>
-                        <input class="btn1" type="text" name="max_number" placeholder="e.g., 10" required />
-
-                        <br><br>
-
-                        <label>How many questions?</label>
-                        <input class="btn1" type="text" name="num_questions" placeholder="e.g., 5" required />
-
-                        <br><br>
-                        <button class="submit" type="submit">Start</button>
-                    </form>
-                {% endif %}
-            {% endif %}
-
-            <img src="{{ url_for('static', filename='division.png') }}">
-            <br><br><br><br>
-        </div>
-
-        <div class="credits">
-            <p>Website Made By: Samia Saeed and Tanvi Saha</p>
-        </div>
-    </body>
+        {% else %}
+            <form method="POST" action="/div">
+                <label for="max_number">Enter the maximum number:</label>
+                <input type="text" name="max_number" id="max_number" placeholder="e.g., 12" required />
+                <br><br>
+                <label for="num_questions">How many questions?</label>
+                <input type="text" name="num_questions" id="num_questions" placeholder="e.g., 10" required />
+                <br><br>
+                <button class="submit" type="submit">Start</button>
+            </form>
+        {% endif %}
+    {% endif %}
+</div>
+<div class="credits">
+    <p>Website Made By: Samia Saeed and Tanvi Saha</p>
+</div>
+</body>
 </html>
