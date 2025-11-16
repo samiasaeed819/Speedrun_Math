@@ -51,53 +51,109 @@ max_number = 0
 
  ## Subtraction ###################
 
-@app.route("/sub", methods=["GET", "POST"])
+# ----------------------------
+# Subtraction Problem Generator
+# ----------------------------
+def generate_problem_sub(max_number):
+    # Types: 4) a - b = ?, 5) a - ? = c, 6) ? - b = c
+    problem_type = random.choice([4, 5, 6])
+    for _ in range(100):
+        a = random.randint(0, max_number)
+        b = random.randint(0, max_number)
+
+        if problem_type == 4:
+            c = a - b
+            if 0 <= c <= max_number:
+                return (a, b)
+        elif problem_type == 5:
+            c = random.randint(0, max_number)
+            missing = a - c
+            if 0 <= missing <= max_number:
+                return (a, c)
+        elif problem_type == 6:
+            c = random.randint(0, max_number)
+            missing = b + c
+            if 0 <= missing <= max_number:
+                return (missing, b)
+    return (4, 2)
+
+# ----------------------------
+# Subtraction Route
+# ----------------------------
+@app.route('/sub', methods=["GET", "POST"])
 def subtraction():
-    if "problems" not in session:
-        session["problems"] = [(random.randint(20, 60), random.randint(1, 20)) for _ in range(10)]
-        session["current"] = 0
-        session["score"] = 0
-        session["results"] = []
-
     if request.method == "POST":
-        action = request.form.get("action")
-        a, b = session["problems"][session["current"]]
+        action = request.form.get("action", "")
 
-        # Hint action
+        # Initialize problems if starting session
+        if "max_number" in request.form and "num_questions" in request.form:
+            max_number = int(request.form["max_number"])
+            total_questions = int(request.form["num_questions"])
+
+            problems = [generate_problem_sub(max_number) for _ in range(total_questions)]
+            session["problems"] = problems
+            session["current"] = 0
+            session["results"] = []
+            session["max_number"] = max_number
+            session["total_questions"] = total_questions
+
+        # Safety check
+        if "problems" not in session or session["current"] >= len(session["problems"]):
+            return render_template("quhack3.html", problem=False, results=session.get("results", []))
+
+        current_index = session["current"]
+        a, b = session["problems"][current_index]
+
+        # -------------------
+        # Hint requested
+        # -------------------
         if action == "hint":
-            answer = a - b
-            low = answer - 5
-            high = answer + 5
-            hint_text = f"The correct answer is between {low} and {high}."
-            return render_template("quhack3.html", problem_str=f"{a} - {b} = ?", 
-                                   current=session["current"]+1, score=session["score"], hint=hint_text)
+            low = max(a + b - 5, 0)
+            high = a + b + 5
+            hint_text = f"The answer is between {low} and {high}."
+            return render_template("quhack3.html", problem_str=f"{a} - {b} = ?", hint=hint_text)
 
-        # Answer submitted
-        user_answer = request.form.get("user_answer")
-        if user_answer and user_answer.isdigit():
-            user_answer = int(user_answer)
+        # -------------------
+        # User submitted answer
+        # -------------------
+        if "user_answer" in request.form:
+            user_answer_str = request.form.get("user_answer", "").strip()
+            if not user_answer_str.isdigit():
+                return render_template(
+                    "quhack3.html",
+                    problem_str=f"{a} - {b} = ?",
+                    message="Enter a valid integer."
+                )
+            user_answer = int(user_answer_str)
             correct_answer = a - b
-            status = "Correct" if user_answer == correct_answer else "Incorrect"
-            session["results"].append({
+
+            # Record result
+            results = session.get("results", [])
+            results.append({
                 "problem": f"{a} - {b} = ?",
                 "your_answer": user_answer,
                 "correct_answer": correct_answer,
-                "status": status
+                "status": "Correct" if user_answer == correct_answer else "Incorrect"
             })
-            if user_answer == correct_answer:
-                session["score"] += 1
+            session["results"] = results
 
-        session["current"] += 1
+            # Move to next question
+            session["current"] += 1
 
-        if session["current"] >= len(session["problems"]):
-            final_results = session["results"]
-            score = session["score"]
-            session.clear()
-            return render_template("quhack3_result.html", results=final_results, score=score)
+            # If all done, show summary
+            if session["current"] >= session["total_questions"]:
+                return render_template("quhack3.html", problem=False, results=results)
 
-    a, b = session["problems"][session["current"]]
-    return render_template("quhack3.html", problem_str=f"{a} - {b} = ?", 
-                           current=session["current"]+1, score=session["score"])
+        # -------------------
+        # Show current problem
+        # -------------------
+        if session["current"] < len(session["problems"]):
+            a, b = session["problems"][session["current"]]
+            return render_template("quhack3.html", problem_str=f"{a} - {b} = ?")
+
+    # GET request → show start form
+    return render_template("quhack3.html", problem=False)
+
 
 #########################################################################################################
 
