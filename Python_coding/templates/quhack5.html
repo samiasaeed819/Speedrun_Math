@@ -38,7 +38,7 @@
                 {% if results %}
                     <h2 style="color:white;">Results</h2>
 
-                    <table style="color:white; border:1px solid white; border-collapse: collapse;">
+                    <table style="color:white; border:2px solid white; border-collapse: collapse;">
                         <tr>
                             <th>Problem</th>
                             <th>Your Answer</th>
@@ -68,12 +68,12 @@
                 {% else %}
                     <form method="POST" action="/div">
                         <label>Enter the maximum number:</label>
-                        <input type="text" name="max_number" placeholder="e.g., 10" required />
+                        <input class="btn1" type="text" name="max_number" placeholder="e.g., 10" required />
 
                         <br><br>
 
                         <label>How many questions?</label>
-                        <input type="text" name="num_questions" placeholder="e.g., 5" required />
+                        <input class="btn1" type="text" name="num_questions" placeholder="e.g., 5" required />
 
                         <br><br>
                         <button class="submit" type="submit">Start</button>

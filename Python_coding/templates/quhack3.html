@@ -42,20 +42,20 @@
                     <!-- ADDED -->
                     <h2 style="color:white;">Results</h2>
 
-                    <table style="color:white; border:1px solid white; border-collapse: collapse;">
+                    <table style="color:white; border:2px solid white; border-collapse: collapse;">
                         <tr>
-                            <th style="border:1px solid white; padding:5px;">Problem</th>
-                            <th style="border:1px solid white; padding:5px;">Your Answer</th>
-                            <th style="border:1px solid white; padding:5px;">Correct Answer</th>
-                            <th style="border:1px solid white; padding:5px;">Status</th>
+                            <th style="border:2px solid white; padding:5px;">Problem</th>
+                            <th style="border:2px solid white; padding:5px;">Your Answer</th>
+                            <th style="border:2px solid white; padding:5px;">Correct Answer</th>
+                            <th style="border:2px solid white; padding:5px;">Status</th>
                         </tr>
 
                         {% for r in results %}
                         <tr>
-                            <td style="border:1px solid white; padding:5px;">{{ r.problem }}</td>
-                            <td style="border:1px solid white; padding:5px;">{{ r.your_answer }}</td>
-                            <td style="border:1px solid white; padding:5px;">{{ r.correct_answer }}</td>
-                            <td style="border:1px solid white; padding:5px;">{{ r.status }}</td>
+                            <td style="border:2px solid white; padding:5px;">{{ r.problem }}</td>
+                            <td style="border:2px solid white; padding:5px;">{{ r.your_answer }}</td>
+                            <td style="border:2px solid white; padding:5px;">{{ r.correct_answer }}</td>
+                            <td style="border:2px solid white; padding:5px;">{{ r.status }}</td>
                         </tr>
                         {% endfor %}
                     </table>
@@ -78,7 +78,7 @@
                 {% else %}
                     <form method="POST" action="/sub">
                         <label for="max_number">Enter the maximum number:</label>
-                        <input class="btn1" type="text" name="max_number" id="max_number" placeholder="e.g., 10" required />
+                        <input class="btn1" type="text" name="max_number" placeholder="e.g., 10" required />
 
                         <!-- ADDED -->
                         <br><br>
