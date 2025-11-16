@@ -182,98 +182,117 @@ def reset_sub():
 
  ## Adition ###################
 
-@app.route("/add", methods=["GET", "POST"])
-def add():
-    # setup game if no session
-    if "problems" not in session:
-        session["problems"] = []
-        session["current"] = 0
-        session["results"] = []
-        session["max_number"] = None
-        session["num_questions"] = None
+###############################
+# ADDITION MODE (LIKE SUBTRACTION)
+###############################
 
-    # If GET → just show page
+@app.route('/quhack2.html', methods=["GET", "POST"])
+@app.route('/add', methods=["GET", "POST"])
+def index_add():
+
+    # --- FIRST PAGE LOAD ---
     if request.method == "GET":
-        return render_template("quhack2.html")
+        return render_template("quhack2.html", problem=False, message=None)
 
-    # POST logic
-    action = request.form.get("action")   # "check" or "hint"
+    # --- USER PRESSED START ---
+    if "max_number" in request.form and "num_questions" in request.form:
+        max_str = request.form['max_number'].strip()
+        count_str = request.form['num_questions'].strip()
 
-    # If starting the game
-    if session["max_number"] is None:
-        try:
-            max_num = int(request.form["max_number"])
-            num_q = int(request.form["num_questions"])
-        except:
-            return render_template("quhack2.html",
+        if not max_str.isdigit() or not count_str.isdigit():
+            return render_template("quhack2.html", problem=False,
                                    message="Please enter valid numbers.")
 
-        # generate problems
-        import random
-        session["problems"] = [(random.randint(0, max_num), random.randint(0, max_num))
-                               for _ in range(num_q)]
-        session["max_number"] = max_num
-        session["num_questions"] = num_q
+        max_number = int(max_str)
+        total_questions = int(count_str)
+
+        # Create list of problems
+        problem_list = []
+        for _ in range(total_questions):
+            a = random.randint(0, max_number)
+            b = random.randint(0, max_number)
+            problem_list.append((a, b))
+
+        # Save to session
+        session["problems"] = problem_list
+        session["answers"] = []
         session["current"] = 0
-        session["results"] = []
+        session["total"] = total_questions
 
-        a, b = session["problems"][0]
-        return render_template("quhack2.html",
-                               problem=True,
+        a, b = problem_list[0]
+        return render_template("quhack2.html", problem=True,
                                problem_str=f"{a} + {b}",
-                               hint=None)
+                               message=None)
 
-    # If HINT was pressed
-    if action == "hint":
-        a, b = session["problems"][session["current"]]
-        # Simple useful hint:
-        # Show the tens-break addition
-        tens = a + (10 - (a % 10)) if a % 10 != 0 else a  # next round number
-        hint_text = f"Try adding to the nearest 10 first: {a} + {b} → {tens} + (remaining)."
+    # --- USER CLICKED "HINT" ---
+    if request.form.get("action") == "hint":
+        problems = session.get("problems")
+        cur = session.get("current")
 
-        a, b = session["problems"][session["current"]]
+        if problems is None:
+            return redirect("/quhack2.html")
+
+        a, b = problems[cur]
+        correct = a + b
+
+        # Range of width 10
+        low = correct - 5
+        high = correct + 5
+
+        if low < 0:
+            low = 0
+            high = 10
+
+        hint_text = f"The answer is between {low} and {high}."
+
         return render_template("quhack2.html",
                                problem=True,
                                problem_str=f"{a} + {b}",
                                hint=hint_text)
 
-    # Otherwise, user clicked CHECK
-    user_answer = request.form.get("user_answer", "").strip()
+    # --- USER SUBMITTED AN ANSWER ---
+    if "user_answer" in request.form:
+        ans_str = request.form["user_answer"].strip()
 
-    # Validate
-    if not user_answer.isdigit():
-        a, b = session["problems"][session["current"]]
+        if not ans_str.isdigit():
+            problems = session["problems"]
+            cur = session["current"]
+            a, b = problems[cur]
+            return render_template("quhack2.html", problem=True,
+                                   problem_str=f"{a} + {b}",
+                                   message="Enter a valid integer.")
+
+        user_ans = int(ans_str)
+
+        problems = session["problems"]
+        cur = session["current"]
+        a, b = problems[cur]
+        correct = a + b
+
+        session["answers"].append({
+            "problem": f"{a} + {b}",
+            "your_answer": user_ans,
+            "correct_answer": correct,
+            "status": "Correct" if user_ans == correct else "Incorrect"
+        })
+
+        session["current"] += 1
+
+        # If finished → show summary table
+        if session["current"] >= session["total"]:
+            return render_template("quhack2.html",
+                                   problem=False,
+                                   results=session["answers"])
+
+        # Otherwise show next problem
+        a, b = problems[session["current"]]
         return render_template("quhack2.html",
-                               message="Please enter a number.",
                                problem=True,
-                               problem_str=f"{a} + {b}")
+                               problem_str=f"{a} + {b}",
+                               message=None)
 
-    user_answer = int(user_answer)
-    a, b = session["problems"][session["current"]]
-    correct = a + b
-
-    # record result
-    session["results"].append({
-        "problem": f"{a} + {b}",
-        "your_answer": user_answer,
-        "correct_answer": correct,
-        "status": "Correct" if user_answer == correct else "Incorrect"
-    })
-
-    session["current"] += 1
-
-    # Game finished?
-    if session["current"] >= session["num_questions"]:
-        results = session["results"]
-        session.clear()
-        return render_template("quhack2.html", results=results)
-
-    # next problem
-    a, b = session["problems"][session["current"]]
-    return render_template("quhack2.html",
-                           problem=True,
-                           problem_str=f"{a} + {b}")
-
+    # fallback
+    return redirect("/quhack2.html")
 
 
  #########################################################################################################
