@@ -38,24 +38,24 @@
                 {% if results %}
                     <h2 style="color:white;">Results</h2>
 
+                    
                     <table style="color:white; border:2px solid white; border-collapse: collapse;">
                         <tr>
-                            <th>Problem</th>
-                            <th>Your Answer</th>
-                            <th>Correct Answer</th>
-                            <th>Status</th>
+                            <th style="border:2px solid white; padding:5px;">Problem</th>
+                            <th style="border:2px solid white; padding:5px;">Your Answer</th>
+                            <th style="border:2px solid white; padding:5px;">Correct Answer</th>
+                            <th style="border:2px solid white; padding:5px;">Status</th>
                         </tr>
 
                         {% for r in results %}
                         <tr>
-                            <td>{{ r.problem }}</td>
-                            <td>{{ r.your_answer }}</td>
-                            <td>{{ r.correct_answer }}</td>
-                            <td>{{ r.status }}</td>
+                            <td style="border:2px solid white; padding:5px;">{{ r.problem }}</td>
+                            <td style="border:2px solid white; padding:5px;">{{ r.your_answer }}</td>
+                            <td style="border:2px solid white; padding:5px;">{{ r.correct_answer }}</td>
+                            <td style="border:2px solid white; padding:5px;">{{ r.status }}</td>
                         </tr>
                         {% endfor %}
                     </table>
-
                     <br>
                     <a href="quhack4.html">
                         <button class="submit">Start Over</button>
