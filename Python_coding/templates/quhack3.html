@@ -61,15 +61,17 @@
         {% else %}
             <form method="POST" action="/sub">
                 <label for="max_number">Enter the maximum number:</label>
-                <input type="text" name="max_number" class="btn1" placeholder="e.g., 50" required />
+                <input type="text" name="max_number" class="btn1" placeholder="e.g., 10" required />
                 <br><br>
                 <label for="num_questions">How many questions?</label>
-                <input class="btn1" type="text" name="num_questions" id="num_questions" placeholder="e.g., 10" required />
+                <input class="btn1" type="text" name="num_questions" id="num_questions" placeholder="e.g., 5" required />
                 <br><br>
                 <button class="submit" type="submit">Start</button>
             </form>
         {% endif %}
     {% endif %}
+                <img src="{{ url_for('static', filename='subtraction.png') }}">
+            <br><br><br><br>
 </div>
 <div class="credits">
     <p>Website Made By: Samia Saeed and Tanvi Saha</p>

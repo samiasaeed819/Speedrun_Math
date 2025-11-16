@@ -414,7 +414,7 @@ def division():
             quotient = a // b
             low = max(quotient - 5, 0)
             high = quotient + 5
-            hint_text = f"The quotient is between {low} and {high}."
+            hint_text = f"The answer(quotient) is between {low} and {high}."
             return render_template("quhack5.html", problem_str=f"{a} ÷ {b} = ?", hint=hint_text)
 
         # -------------------
