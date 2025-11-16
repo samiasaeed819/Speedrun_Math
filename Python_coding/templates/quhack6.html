@@ -28,7 +28,7 @@
                     <p style="color:white;">{{ message }}</p>
                 {% endif %}
                 <form method="POST" action="/all">
-                    <input type="text"  class="submit" name="user_answer" placeholder="Your Answer here" />
+                    <input type="text"  class="btn1" name="user_answer" placeholder="Your Answer here" />
 
                     <p>Round to nearest whole integer quotient for division.</p>
                     <button class="submit" type="submit">Check</button>
@@ -46,7 +46,7 @@
                 {% else %}
                     <form method="POST" action="/all">
                         <label for="max_number">Enter the maximum number:</label>
-                        <input type="text" name="max_number" id="max_number" placeholder="e.g., 10" required />
+                        <input class="btn1" type="text" name="max_number"  placeholder="e.g., 10" required />
                         <button  class="submit" type="submit">Get Problems</button>
 
                     </form>

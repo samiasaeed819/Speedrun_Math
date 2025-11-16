@@ -1,71 +1,101 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Speedrun Math - Add</title>
+        <title>Speedrun Math - Addition</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='quhack.css') }}">
         <script src="extra.js"></script>
-        <link href="quhack.py">
-    
-        <div class="topnav">
 
+        <div class="topnav">
             <a href="/">Home</a>
-            <a  class="active" href="quhack2.html">Addition</a>
+            <a class="active" href="quhack2.html">Addition</a>
             <a href="quhack3.html">Subtraction</a>
             <a href="quhack4.html">Multiplication</a>
             <a href="quhack5.html">Division</a>
             <a href="quhack6.html">Mixed</a>
             <a href="quhack9.html">Self Assesment</a>
             <a href="quhack7.html">About</a>
-
-            <a></a>
-
-          </div>
+        </div>
     </head>
+
     <body>
         <div class="all">
-                    <h1>Simple Addition Practice</h1>
+            <h1>Simple Addition Practice</h1>
 
-            <!-- If we have a problem to solve -->
             {% if problem %}
-                <p><h1>Problem: {{ problem_str }}</h1></p>
+                <h1 class="h1">Problem: {{ problem_str }}</h1>
+
                 {% if message %}
                     <p style="color:white;">{{ message }}</p>
                 {% endif %}
+
                 <form method="POST" action="/add">
-                    <input type="text"  class="submit" name="user_answer" placeholder="Your answer here" />
-                    <button class="submit" type="submit">Check</button>
+                    <input class="btn1" type="text" name="user_answer" placeholder="Your answer here" />
+
+                    <button class="submit" type="submit" name="action" value="check">Check</button>
+
+                    <!-- NEW HINT BUTTON -->
+                    <button class="submit" type="submit" name="action" value="hint">Hint</button>
                 </form>
-            
-            <!-- If we are not currently showing a problem -->
+
+                {% if hint %}
+                    <p style="color:rgb(243, 193, 137);">Hint: {{ hint }}</p>
+                {% endif %}
+
+
             {% else %}
-                {% if message %}
+
+                {% if results %}
+                    <h2 style="color:white;">Results</h2>
+
+                    <table style="color:white; border:2px solid white; border-collapse: collapse;">
+                        <tr>
+                            <th style="border:2px solid white; padding:5px;">Problem</th>
+                            <th style="border:2px solid white; padding:5px;">Your Answer</th>
+                            <th style="border:2px solid white; padding:5px;">Correct Answer</th>
+                            <th style="border:2px solid white; padding:5px;">Status</th>
+                        </tr>
+
+                        {% for r in results %}
+                        <tr>
+                            <td style="border:2px solid white; padding:5px;">{{ r.problem }}</td>
+                            <td style="border:2px solid white; padding:5px;">{{ r.your_answer }}</td>
+                            <td style="border:2px solid white; padding:5px;">{{ r.correct_answer }}</td>
+                            <td style="border:2px solid white; padding:5px;">{{ r.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+
+                    <br>
+                    <a href="quhack2.html">
+                        <button class="submit">Start Over</button>
+                    </a>
+
+                {% elif message %}
                     <p style="color:white;">{{ message }}</p>
-                    <p>
-                        <a href="quhack2.html">
-                            <button type="submit" class="submit">Reset</button>
-                        </a>
-                    </p>
+                    <a href="quhack2.html"><button class="submit">Reset</button></a>
+
                 {% else %}
                     <form method="POST" action="/add">
-                        <label for="max_number">Enter the maximum number:</label>
-                        <input type="text" name="max_number" id="max_number" placeholder="e.g., 10" required />
-                        <button  class="submit" type="submit">Get Problem</button>
+                        <label>Enter the maximum number:</label>
+                        <input class="btn1" type="text" name="max_number" placeholder="e.g., 10" required />
 
+                        <br><br>
+
+                        <label>How many questions?</label>
+                        <input class="btn1" type="text" name="num_questions" placeholder="e.g., 5" required />
+
+                        <br><br>
+                        <button class="submit" type="submit">Start</button>
                     </form>
                 {% endif %}
             {% endif %}
-            <img src="{{ url_for('static', filename='addition.png') }}" >
-            <br>
-            <br>
-            <br>
-            <br>
+
+            <img src="{{ url_for('static', filename='addition.png') }}">
+            <br><br><br><br>
         </div>
+
         <div class="credits">
-            <p>Website Made By: Samia Saeed and Tanvi Saha
-                <br>   
-                 </p>
-
+            <p>Website Made By: Samia Saeed and Tanvi Saha</p>
         </div>
-
     </body>
 </html>
