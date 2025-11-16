@@ -14,7 +14,9 @@ app.secret_key = "a_very_secret_key_for_session"  # Replace with a secure key in
 def home():
     return render_template('quhack.html')
 
-
+@app.route('/quhack2.html')
+def page_adition():
+    return render_template('quhack2.html')
 
 @app.route('/quhack3.html')
 def sub():
