@@ -1,14 +1,3 @@
-This is a readme sample file.
+Fixing the Read Me
 
-This is a good program.
-
-Good Job
-This is a readme sample file. 
-
-Second Edit
-
-Third Edit
-
-Fourth Edit
-
-Fifth Edit
+This project is for the service of the community, to teach the under edducated children the absic math skills they need to know for a sucsessful future. 
