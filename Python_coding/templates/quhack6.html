@@ -13,6 +13,8 @@
             <a  class="active"  href="quhack6.html">Mixed</a>
             <a href="quhack9.html">Self Assesment</a>
             <a href="quhack10.html">Fractions/Decimals</a>
+            <a href="quhack11.html">Test</a>
+            <a href="quhack12.html">Account</a>
             <a href="quhack7.html">About</a>
             
 
@@ -26,7 +28,7 @@
             {% if problem %}
                 <p><h1>Problem: {{ problem_str }}</h1></p>
                 {% if message %}
-                    <p style="color:rgb(157, 198, 201);">{{ message }}</p>
+                    <p style="color:rgb(3, 43, 45);">{{ message }}</p>
                 {% endif %}
                 <form method="POST" action="/all">
                     <input type="text"  class="btn1" name="user_answer" placeholder="Your Answer here" />
@@ -38,7 +40,7 @@
             <!-- If we are not currently showing a problem -->
             {% else %}
                 {% if message %}
-                    <p style="color:rgb(157, 198, 201);">{{ message }}</p>
+                    <p style="color:rgb(3, 43, 45);">{{ message }}</p>
                     <p>
                         <a href="quhack6.html">
                             <button  type="submit" class="submit">Reset</button>

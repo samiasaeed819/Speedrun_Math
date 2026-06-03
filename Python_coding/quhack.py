@@ -1,19 +1,112 @@
 import time
 import random
+import os
+import sqlite3
 from fractions import Fraction
 
 # importing Flask and other modules
 from flask import Flask, render_template, request, session, redirect, url_for
+from werkzeug.security import check_password_hash, generate_password_hash
  
 # Flask constructor
 app = Flask(__name__)   
 app.secret_key = "a_very_secret_key_for_session"  # Replace with a secure key in production 
+DB_PATH = os.path.join(app.root_path, "quhack.db")
+
+
+def get_db_connection():
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    return connection
+
+
+def init_db():
+    connection = get_db_connection()
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            total_answered INTEGER DEFAULT 0,
+            correct_answered INTEGER DEFAULT 0,
+            incorrect_answered INTEGER DEFAULT 0
+        )
+    """)
+    connection.commit()
+    connection.close()
+
+
+def get_empty_stats():
+    return {"answered": 0, "correct": 0, "incorrect": 0}
+
+
+def get_session_stats():
+    return session.get("stats", get_empty_stats())
+
+
+def add_to_stats(answered, correct, incorrect):
+    stats = get_session_stats()
+    stats["answered"] = stats.get("answered", 0) + answered
+    stats["correct"] = stats.get("correct", 0) + correct
+    stats["incorrect"] = stats.get("incorrect", 0) + incorrect
+    session["stats"] = stats
+
+    user_id = session.get("user_id")
+    if user_id:
+        connection = get_db_connection()
+        connection.execute(
+            """
+            UPDATE users
+            SET total_answered = total_answered + ?,
+                correct_answered = correct_answered + ?,
+                incorrect_answered = incorrect_answered + ?
+            WHERE id = ?
+            """,
+            (answered, correct, incorrect, user_id)
+        )
+        connection.commit()
+        connection.close()
+
+
+def get_account_stats():
+    user_id = session.get("user_id")
+    if not user_id:
+        return None
+
+    connection = get_db_connection()
+    user = connection.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+    connection.close()
+    return user
+
+
+def get_site_stats():
+    connection = get_db_connection()
+    stats = connection.execute(
+        """
+        SELECT
+            COUNT(*) AS users,
+            COALESCE(SUM(total_answered), 0) AS answered,
+            COALESCE(SUM(correct_answered), 0) AS correct,
+            COALESCE(SUM(incorrect_answered), 0) AS incorrect
+        FROM users
+        """
+    ).fetchone()
+    connection.close()
+    return stats
+
+
+init_db()
 
 
 ######FLASK####
 @app.route('/')
 def home():
-    return render_template('quhack.html')
+    return render_template(
+        'quhack.html',
+        session_stats=get_session_stats(),
+        account_stats=get_account_stats(),
+        site_stats=get_site_stats()
+    )
 
 @app.route('/quhack2.html')
 def page_adition():
@@ -46,6 +139,18 @@ def assement():
 @app.route('/quhack10.html')
 def advanced_random():
     return render_template('quhack10.html', problem=False)
+
+@app.route('/quhack11.html')
+def full_test_page():
+    return render_template('quhack11.html', test=False)
+
+@app.route('/quhack12.html')
+def account_page():
+    return render_template(
+        'quhack12.html',
+        user=get_account_stats(),
+        site_stats=get_site_stats()
+    )
 
 
 
@@ -772,6 +877,150 @@ def advanced_test():
         problem=True,
         problem_str=current_problem["problem"],
         answer_type=current_problem["answer_type"]
+    )
+
+
+def parse_test_answer(problem, form_data, index):
+    if problem["answer_type"] == "decimal":
+        answer_text = form_data.get(f"decimal_answer_{index}", "").strip()
+        if not answer_text:
+            raise ValueError
+        return parse_decimal_answer(answer_text), answer_text
+
+    numerator_text = form_data.get(f"answer_numerator_{index}", "").strip()
+    denominator_text = form_data.get(f"answer_denominator_{index}", "").strip()
+    if not numerator_text or not denominator_text:
+        raise ValueError
+    return parse_fraction_answer(numerator_text, denominator_text), f"{numerator_text}/{denominator_text}"
+
+
+@app.route('/test', methods=["GET", "POST"])
+def full_test():
+    if request.method == "GET":
+        return render_template("quhack11.html", test=False)
+
+    if "max_number" in request.form and "num_questions" in request.form:
+        max_str = request.form.get("max_number", "").strip()
+        count_str = request.form.get("num_questions", "").strip()
+        number_mode = request.form.get("number_mode", "both")
+        operations = request.form.getlist("operations")
+
+        if "all" in operations:
+            operations = ["addition", "subtraction", "multiplication", "division"]
+
+        if not max_str.isdigit() or not count_str.isdigit():
+            return render_template("quhack11.html", test=False, message="Please enter valid numbers.")
+
+        if not operations:
+            return render_template("quhack11.html", test=False, message="Please choose at least one operation.")
+
+        max_number = int(max_str)
+        total_questions = int(count_str)
+
+        if max_number < 1 or total_questions < 1:
+            return render_template("quhack11.html", test=False, message="Please enter numbers greater than 0.")
+
+        test_questions = [generate_advanced_problem(max_number, operations, number_mode) for _ in range(total_questions)]
+        session["test_questions"] = test_questions
+        return render_template("quhack11.html", test=True, questions=test_questions)
+
+    if request.form.get("action") == "submit_test":
+        test_questions = session.get("test_questions", [])
+        if not test_questions:
+            return render_template("quhack11.html", test=False, message="Please start a test first.")
+
+        results = []
+        correct_count = 0
+
+        for index, problem in enumerate(test_questions):
+            correct_answer = Fraction(problem["answer"])
+            try:
+                user_answer, user_answer_text = parse_test_answer(problem, request.form, index)
+                is_correct = answers_match(user_answer, correct_answer, problem["answer_type"])
+            except (ValueError, ZeroDivisionError):
+                user_answer_text = "No valid answer"
+                is_correct = False
+
+            if is_correct:
+                correct_count += 1
+
+            results.append({
+                "problem": problem["problem"],
+                "your_answer": user_answer_text,
+                "correct_answer": problem["display_answer"],
+                "status": "Correct" if is_correct else "Incorrect"
+            })
+
+        incorrect_count = len(test_questions) - correct_count
+        add_to_stats(len(test_questions), correct_count, incorrect_count)
+        session["last_test_results"] = results
+
+        return render_template(
+            "quhack11.html",
+            test=False,
+            results=results,
+            summary={
+                "answered": len(test_questions),
+                "correct": correct_count,
+                "incorrect": incorrect_count
+            },
+            session_stats=get_session_stats()
+        )
+
+    return render_template("quhack11.html", test=False)
+
+
+@app.route('/account', methods=["GET", "POST"])
+def account():
+    message = None
+
+    if request.method == "POST":
+        action = request.form.get("action", "")
+
+        if action == "logout":
+            session.pop("user_id", None)
+            session.pop("username", None)
+            message = "Logged out."
+        else:
+            username = request.form.get("username", "").strip()
+            password = request.form.get("password", "").strip()
+
+            if not username or not password:
+                message = "Enter a username and password."
+            elif action == "register":
+                connection = get_db_connection()
+                try:
+                    cursor = connection.execute(
+                        "INSERT INTO users (username, password) VALUES (?, ?)",
+                        (username, generate_password_hash(password))
+                    )
+                    connection.commit()
+                    session["user_id"] = cursor.lastrowid
+                    session["username"] = username
+                    message = "Account created."
+                except sqlite3.IntegrityError:
+                    message = "That username already exists."
+                connection.close()
+            elif action == "login":
+                connection = get_db_connection()
+                user = connection.execute(
+                    "SELECT * FROM users WHERE username = ?",
+                    (username,)
+                ).fetchone()
+                connection.close()
+
+                if user and check_password_hash(user["password"], password):
+                    session["user_id"] = user["id"]
+                    session["username"] = user["username"]
+                    message = "Logged in."
+                else:
+                    message = "Username or password did not match."
+
+    return render_template(
+        "quhack12.html",
+        user=get_account_stats(),
+        site_stats=get_site_stats(),
+        message=message
     )
 
 

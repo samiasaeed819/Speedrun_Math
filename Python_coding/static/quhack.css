@@ -215,6 +215,12 @@ h2 {
     border-top: solid 3px #0c3f3a;
   }
 
+  .test-question {
+    border-top: solid 2px #0c3f3a;
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+
   .btn2{
     text-align: center;
     border-radius: 15px;

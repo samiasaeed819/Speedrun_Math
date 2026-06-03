@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Speedrun Math - Test</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='quhack.css') }}">
+    <script src="extra.js"></script>
+
+    <div class="topnav">
+        <a href="/">Home</a>
+        <a href="quhack2.html">Addition</a>
+        <a href="quhack3.html">Subtraction</a>
+        <a href="quhack4.html">Multiplication</a>
+        <a href="quhack5.html">Division</a>
+        <a href="quhack6.html">Mixed</a>
+        <a href="quhack9.html">Self Assessment</a>
+        <a href="quhack10.html">Fractions/Decimals</a>
+        <a class="active" href="quhack11.html">Test</a>
+        <a href="quhack12.html">Account</a>
+        <a href="quhack7.html">About</a>
+    </div>
+</head>
+<body>
+<div class="all">
+    <h1>Fractions and Decimals Test</h1>
+
+    {% if test %}
+        <form method="POST" action="/test">
+            {% for q in questions %}
+                <div class="test-question">
+                    <h2>Question {{ loop.index }}: {{ q.problem }}</h2>
+
+                    {% if q.answer_type == "decimal" %}
+                        <input class="btn1" type="text" name="decimal_answer_{{ loop.index0 }}" placeholder="Decimal answer" required>
+                    {% else %}
+                        <div class="fraction-answer">
+                            <input class="btn1 fraction-input" type="text" name="answer_numerator_{{ loop.index0 }}" placeholder="Numerator" required>
+                            <div class="fraction-line"></div>
+                            <input class="btn1 fraction-input" type="text" name="answer_denominator_{{ loop.index0 }}" placeholder="Denominator" required>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button class="submit" type="submit" name="action" value="submit_test">Submit Test</button>
+        </form>
+
+    {% else %}
+        {% if summary %}
+            <h2>Test Summary</h2>
+            <p>Questions Answered: {{ summary.answered }}</p>
+            <p>Questions Correct: {{ summary.correct }}</p>
+            <p>Questions Incorrect: {{ summary.incorrect }}</p>
+        {% endif %}
+
+        {% if session_stats %}
+            <h2>Current Session</h2>
+            <p>Questions Answered: {{ session_stats.answered }}</p>
+            <p>Questions Correct: {{ session_stats.correct }}</p>
+            <p>Questions Incorrect: {{ session_stats.incorrect }}</p>
+        {% endif %}
+
+        {% if results %}
+            <h2 style="color:rgb(3, 43, 45);">Results</h2>
+            <table style="color:rgb(3, 43, 45); border:1px solid rgb(3, 43, 45); border-collapse: collapse;">
+                <tr>
+                    <th style="border:1px solid rgb(3, 43, 45); padding:5px;">Problem</th>
+                    <th style="border:1px solid rgb(3, 43, 45); padding:5px;">Your Answer</th>
+                    <th style="border:1px solid rgb(3, 43, 45); padding:5px;">Correct Answer</th>
+                    <th style="border:1px solid rgb(3, 43, 45); padding:5px;">Status</th>
+                </tr>
+                {% for r in results %}
+                    <tr>
+                        <td style="border:1px solid rgb(3, 43, 45); padding:5px;">{{ r.problem }}</td>
+                        <td style="border:1px solid rgb(3, 43, 45); padding:5px;">{{ r.your_answer }}</td>
+                        <td style="border:1px solid rgb(3, 43, 45); padding:5px;">{{ r.correct_answer }}</td>
+                        <td style="border:1px solid rgb(3, 43, 45); padding:5px;">{{ r.status }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <br>
+        {% endif %}
+
+        {% if message %}
+            <p style="color:rgb(3, 43, 45);">{{ message }}</p>
+        {% endif %}
+
+        <form method="POST" action="/test">
+            <label>Enter the maximum number:</label>
+            <input class="btn1" type="text" name="max_number" placeholder="e.g., 10" required>
+
+            <br><br>
+
+            <label>How many questions?</label>
+            <input class="btn1" type="text" name="num_questions" placeholder="e.g., 5" required>
+
+            <br><br>
+
+            <h2>Choose Operations</h2>
+            <input type="checkbox" name="operations" value="addition"><label>Addition</label>
+            <input type="checkbox" name="operations" value="subtraction"><label>Subtraction</label>
+            <input type="checkbox" name="operations" value="multiplication"><label>Multiplication</label>
+            <input type="checkbox" name="operations" value="division"><label>Division</label>
+            <input type="checkbox" name="operations" value="all"><label>All 4</label>
+
+            <br><br>
+
+            <h2>Choose Number Type</h2>
+            <input type="radio" name="number_mode" value="fraction" required><label>Fractions</label>
+            <input type="radio" name="number_mode" value="decimal"><label>Decimals</label>
+            <input type="radio" name="number_mode" value="both"><label>Both</label>
+
+            <br><br>
+            <button class="submit" type="submit">Start Test</button>
+        </form>
+    {% endif %}
+
+    <img src="{{ url_for('static', filename='equal.png') }}">
+    <br><br><br><br>
+</div>
+<div class="credits">
+    <p>Website Made By: Samia Saeed and Tanvi Saha</p>
+</div>
+</body>
+</html>

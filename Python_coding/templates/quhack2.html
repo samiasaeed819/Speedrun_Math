@@ -14,6 +14,8 @@
             <a href="quhack6.html">Mixed</a>
             <a href="quhack9.html">Self Assesment</a>
             <a href="quhack10.html">Fractions/Decimals</a>
+            <a href="quhack11.html">Test</a>
+            <a href="quhack12.html">Account</a>
             <a href="quhack7.html">About</a>
         </div>
     </head>
@@ -26,7 +28,7 @@
                 <h1 class="h1">Problem: {{ problem_str }}</h1>
 
                 {% if message %}
-                    <p style="color:rgb(157, 198, 201)">{{ message }}</p>
+                    <p style="color:rgb(3, 43, 45)">{{ message }}</p>
                 {% endif %}
 
                 <form method="POST" action="/add">
@@ -39,29 +41,29 @@
                 </form>
 
                 {% if hint %}
-                    <p style="color:rgb(157, 198, 201);">Hint: {{ hint }}</p>
+                    <p style="color:rgb(3, 43, 45);">Hint: {{ hint }}</p>
                 {% endif %}
 
 
             {% else %}
 
                 {% if results %}
-                    <h2 style="color:rgb(157, 198, 201);">Results</h2>
+                    <h2 style="color:rgb(3, 43, 45);">Results</h2>
 
-                    <table style="color:rgb(157, 198, 201); border:2px solid rgb(157, 198, 201); border-collapse: collapse;">
+                    <table style="color:rgb(3, 43, 45); border:2px solid rgb(3, 43, 45); border-collapse: collapse;">
                         <tr>
-                            <th style="border:2px solid rgb(157, 198, 201); padding:5px;">Problem</th>
-                            <th style="border:2px solid rgb(157, 198, 201); padding:5px;">Your Answer</th>
-                            <th style="border:2px solid rgb(157, 198, 201); padding:5px;">Correct Answer</th>
-                            <th style="border:2px solid rgb(157, 198, 201); padding:5px;">Status</th>
+                            <th style="border:2px solid rgb(3, 43, 45); padding:5px;">Problem</th>
+                            <th style="border:2px solid rgb(3, 43, 45); padding:5px;">Your Answer</th>
+                            <th style="border:2px solid rgb(3, 43, 45); padding:5px;">Correct Answer</th>
+                            <th style="border:2px solid rgb(3, 43, 45); padding:5px;">Status</th>
                         </tr>
 
                         {% for r in results %}
                         <tr>
-                            <td style="border:2px solid rgb(157, 198, 201); padding:5px;">{{ r.problem }}</td>
-                            <td style="border:2px solid rgb(157, 198, 201); padding:5px;">{{ r.your_answer }}</td>
-                            <td style="border:2px solid rgb(157, 198, 201); padding:5px;">{{ r.correct_answer }}</td>
-                            <td style="border:2px solid rgb(157, 198, 201); padding:5px;">{{ r.status }}</td>
+                            <td style="border:2px solid rgb(3, 43, 45); padding:5px;">{{ r.problem }}</td>
+                            <td style="border:2px solid rgb(3, 43, 45); padding:5px;">{{ r.your_answer }}</td>
+                            <td style="border:2px solid rgb(3, 43, 45); padding:5px;">{{ r.correct_answer }}</td>
+                            <td style="border:2px solid rgb(3, 43, 45); padding:5px;">{{ r.status }}</td>
                         </tr>
                         {% endfor %}
                     </table>
@@ -72,7 +74,7 @@
                     </a>
 
                 {% elif message %}
-                    <p style="color:rgb(157, 198, 201);">{{ message }}</p>
+                    <p style="color:rgb(3, 43, 45);">{{ message }}</p>
                     <a href="quhack2.html"><button class="submit">Reset</button></a>
 
                 {% else %}

@@ -14,6 +14,8 @@
             <a href="quhack6.html">Mixed</a>
             <a href="quhack9.html">Self Assesment</a>
             <a href="quhack10.html">Fractions/Decimals</a>
+            <a href="quhack11.html">Test</a>
+            <a href="quhack12.html">Account</a>
             <a href="quhack7.html">About</a>
           </div>
     </head>
@@ -32,7 +34,27 @@
                     <a href="quhack5.html"><button class="btn" type="button" >Division</button></a>
                     <a href="quhack6.html"><button class="btn" type="button" >Mixed</button></a>
                     <a href="quhack10.html"><button class="btn" type="button" >Fractions/Decimals</button></a>                       
+                    <a href="quhack11.html"><button class="btn" type="button" >Test</button></a>
+                    <a href="quhack12.html"><button class="btn" type="button" >Account</button></a>
                 </div>
+
+                <h2>Current Session Statistics</h2>
+                <p>Questions Answered: {{ session_stats.answered }}</p>
+                <p>Questions Correct: {{ session_stats.correct }}</p>
+                <p>Questions Incorrect: {{ session_stats.incorrect }}</p>
+
+                {% if account_stats %}
+                    <h2>{{ account_stats.username }} Account Statistics</h2>
+                    <p>Questions Answered: {{ account_stats.total_answered }}</p>
+                    <p>Questions Correct: {{ account_stats.correct_answered }}</p>
+                    <p>Questions Incorrect: {{ account_stats.incorrect_answered }}</p>
+                {% endif %}
+
+                <h2>Website Statistics</h2>
+                <p>Accounts: {{ site_stats.users }}</p>
+                <p>Total Questions Answered: {{ site_stats.answered }}</p>
+                <p>Total Questions Correct: {{ site_stats.correct }}</p>
+                <p>Total Questions Incorrect: {{ site_stats.incorrect }}</p>
 
         <div class="credits">
             <p >Website Made By: Samia Saeed and Tanvi Saha

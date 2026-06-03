@@ -14,6 +14,8 @@
         <a href="quhack6.html">Mixed</a>
         <a href="quhack9.html">Self Assessment</a>
         <a class="active" href="quhack10.html">Fractions/Decimals</a>
+        <a href="quhack11.html">Test</a>
+        <a href="quhack12.html">Account</a>
         <a href="quhack7.html">About</a>
     </div>
 </head>
@@ -25,42 +27,38 @@
         <h1 class="h1">Problem: {{ problem_str }}</h1>
 
         <form method="POST" action="/advanced">
-            {% if answer_type == "decimal" %}
-                <input class="btn1" type="text" name="user_answer_decimal" placeholder="Decimal answer" required />
-            {% else %}
-                <div class="fraction-answer">
-                    <input class="btn1 fraction-input" type="text" name="answer_numerator" placeholder="Numerator" required />
-                    <div class="fraction-line"></div>
-                    <input class="btn1 fraction-input" type="text" name="answer_denominator" placeholder="Denominator" required />
-                </div>
-            {% endif %}
+            <div class="fraction-answer">
+                <input class="btn1 fraction-input" type="text" name="answer_numerator" placeholder="Numerator" required />
+                <div class="fraction-line"></div>
+                <input class="btn1 fraction-input" type="text" name="answer_denominator" placeholder="Denominator" required />
+            </div>
             <button class="submit" type="submit" name="action" value="check">Check</button>
-            <button class="submit" type="submit" name="action" value="hint" formnovalidate>Hint</button>
+            <button class="submit" type="submit" name="action" value="hint">Hint</button>
         </form>
 
         {% if hint %}
-            <p style="color:rgb(157, 198, 201);">Hint: {{ hint }}</p>
+            <p style="color:rgb(3, 43, 45);">Hint: {{ hint }}</p>
         {% endif %}
         {% if message %}
-            <p style="color:rgb(157, 198, 201);">{{ message }}</p>
+            <p style="color:rgb(3, 43, 45);">{{ message }}</p>
         {% endif %}
 
     {% else %}
         {% if results %}
-            <h2 style="color:rgb(157, 198, 201);">Results</h2>
-            <table style="color:rgb(157, 198, 201); border:1px solid rgb(157, 198, 201); border-collapse: collapse;">
+            <h2 style="color:rgb(3, 43, 45);">Results</h2>
+            <table style="color:rgb(3, 43, 45); border:1px solid rgb(3, 43, 45); border-collapse: collapse;">
                 <tr>
-                    <th style="border:1px solid rgb(157, 198, 201); padding:5px;">Problem</th>
-                    <th style="border:1px solid rgb(157, 198, 201); padding:5px;">Your Answer</th>
-                    <th style="border:1px solid rgb(157, 198, 201); padding:5px;">Correct Answer</th>
-                    <th style="border:1px solid rgb(157, 198, 201); padding:5px;">Status</th>
+                    <th style="border:1px solid rgb(3, 43, 45); padding:5px;">Problem</th>
+                    <th style="border:1px solid rgb(3, 43, 45); padding:5px;">Your Answer</th>
+                    <th style="border:1px solid rgb(3, 43, 45); padding:5px;">Correct Answer</th>
+                    <th style="border:1px solid rgb(3, 43, 45); padding:5px;">Status</th>
                 </tr>
                 {% for r in results %}
                 <tr>
-                    <td style="border:1px solid rgb(157, 198, 201); padding:5px;">{{ r.problem }}</td>
-                    <td style="border:1px solid rgb(157, 198, 201); padding:5px;">{{ r.your_answer }}</td>
-                    <td style="border:1px solid rgb(157, 198, 201); padding:5px;">{{ r.correct_answer }}</td>
-                    <td style="border:1px solid rgb(157, 198, 201); padding:5px;">{{ r.status }}</td>
+                    <td style="border:1px solid rgb(3, 43, 45); padding:5px;">{{ r.problem }}</td>
+                    <td style="border:1px solid rgb(3, 43, 45); padding:5px;">{{ r.your_answer }}</td>
+                    <td style="border:1px solid rgb(3, 43, 45); padding:5px;">{{ r.correct_answer }}</td>
+                    <td style="border:1px solid rgb(3, 43, 45); padding:5px;">{{ r.status }}</td>
                 </tr>
                 {% endfor %}
             </table>
@@ -69,7 +67,7 @@
 
         {% else %}
             {% if message %}
-                <p style="color:rgb(157, 198, 201);">{{ message }}</p>
+                <p style="color:rgb(3, 43, 45);">{{ message }}</p>
             {% endif %}
 
             <form method="POST" action="/advanced">
