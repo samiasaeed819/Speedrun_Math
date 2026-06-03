@@ -25,11 +25,15 @@
         <h1 class="h1">Problem: {{ problem_str }}</h1>
 
         <form method="POST" action="/advanced">
-            <div class="fraction-answer">
-                <input class="btn1 fraction-input" type="text" name="answer_numerator" placeholder="Numerator" required />
-                <div class="fraction-line"></div>
-                <input class="btn1 fraction-input" type="text" name="answer_denominator" placeholder="Denominator" required />
-            </div>
+            {% if answer_type == "decimal" %}
+                <input class="btn1" type="text" name="user_answer_decimal" placeholder="Decimal answer" required />
+            {% else %}
+                <div class="fraction-answer">
+                    <input class="btn1 fraction-input" type="text" name="answer_numerator" placeholder="Numerator" required />
+                    <div class="fraction-line"></div>
+                    <input class="btn1 fraction-input" type="text" name="answer_denominator" placeholder="Denominator" required />
+                </div>
+            {% endif %}
             <button class="submit" type="submit" name="action" value="check">Check</button>
             <button class="submit" type="submit" name="action" value="hint" formnovalidate>Hint</button>
         </form>

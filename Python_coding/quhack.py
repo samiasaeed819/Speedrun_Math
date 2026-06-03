@@ -606,7 +606,13 @@ def parse_fraction_answer(numerator_text, denominator_text):
     return Fraction(numerator, denominator)
 
 
-def answers_match(user_answer, correct_answer):
+def parse_decimal_answer(answer_text):
+    return Fraction(answer_text.strip())
+
+
+def answers_match(user_answer, correct_answer, answer_type):
+    if answer_type == "fraction":
+        return user_answer == correct_answer
     return abs(float(user_answer - correct_answer)) < 0.01
 
 
@@ -650,11 +656,13 @@ def generate_advanced_problem(max_number, operations, number_mode):
             b, b_type = generate_advanced_operand(max_number, number_mode)
         answer = a / b
 
+    answer_type = "decimal" if a_type == "decimal" or b_type == "decimal" else "fraction"
     problem_str = f"{format_mixed_number(a, a_type)} {symbol} {format_mixed_number(b, b_type)} = ?"
     return {
         "problem": problem_str,
         "answer": str(answer),
-        "display_answer": format_number(answer),
+        "answer_type": answer_type,
+        "display_answer": format_decimal(answer) if answer_type == "decimal" else format_number(answer),
         "decimal_answer": format_decimal(answer)
     }
 
@@ -701,9 +709,27 @@ def advanced_test():
 
     if action == "hint":
         hint_text = f"The answer is about {current_problem['decimal_answer']} as a decimal."
-        return render_template("quhack10.html", problem=True, problem_str=current_problem["problem"], hint=hint_text)
+        return render_template(
+            "quhack10.html",
+            problem=True,
+            problem_str=current_problem["problem"],
+            answer_type=current_problem["answer_type"],
+            hint=hint_text
+        )
 
-    if "answer_numerator" in request.form and "answer_denominator" in request.form:
+    if current_problem["answer_type"] == "decimal" and "user_answer_decimal" in request.form:
+        user_answer_str = request.form.get("user_answer_decimal", "").strip()
+        try:
+            user_answer = parse_decimal_answer(user_answer_str)
+        except ValueError:
+            return render_template(
+                "quhack10.html",
+                problem=True,
+                problem_str=current_problem["problem"],
+                answer_type=current_problem["answer_type"],
+                message="Enter a valid decimal."
+            )
+    elif current_problem["answer_type"] == "fraction" and "answer_numerator" in request.form and "answer_denominator" in request.form:
         numerator_str = request.form.get("answer_numerator", "").strip()
         denominator_str = request.form.get("answer_denominator", "").strip()
         try:
@@ -713,16 +739,26 @@ def advanced_test():
                 "quhack10.html",
                 problem=True,
                 problem_str=current_problem["problem"],
+                answer_type=current_problem["answer_type"],
                 message="Enter a valid numerator and denominator."
             )
 
         user_answer_str = f"{numerator_str}/{denominator_str}"
+    else:
+        return render_template(
+            "quhack10.html",
+            problem=True,
+            problem_str=current_problem["problem"],
+            answer_type=current_problem["answer_type"]
+        )
+
+    if "user_answer_decimal" in request.form or "answer_numerator" in request.form:
         results = session.get("advanced_results", [])
         results.append({
             "problem": current_problem["problem"],
             "your_answer": user_answer_str,
             "correct_answer": current_problem["display_answer"],
-            "status": "Correct" if answers_match(user_answer, correct_answer) else "Incorrect"
+            "status": "Correct" if answers_match(user_answer, correct_answer, current_problem["answer_type"]) else "Incorrect"
         })
         session["advanced_results"] = results
         session["advanced_current"] += 1
@@ -731,7 +767,12 @@ def advanced_test():
             return render_template("quhack10.html", problem=False, results=results)
 
     current_problem = session["advanced_problems"][session["advanced_current"]]
-    return render_template("quhack10.html", problem=True, problem_str=current_problem["problem"])
+    return render_template(
+        "quhack10.html",
+        problem=True,
+        problem_str=current_problem["problem"],
+        answer_type=current_problem["answer_type"]
+    )
 
 
 
