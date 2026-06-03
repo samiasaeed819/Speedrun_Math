@@ -1,5 +1,5 @@
 body{
-    background-color:#86c0ba;
+    background-color:#aadde4;
     margin-left: 20px;
     margin-right: 20px;
     margin-bottom: 20px;
@@ -41,7 +41,7 @@ body{
     border-radius: 15px;
     border: solid 3px #0c3f3a;
     background-color: #6dafa9;
-    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     font-style: italic;
     font-weight: bold;
     padding: 12px;
@@ -65,21 +65,22 @@ body{
   margin-right: auto;
 }
 h1 {
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+   font-family:'Times New Roman', Times, serif;
+   font-weight: bold;
     color: rgb(11, 85, 90);
 }
 
 .h1 {
   color:  rgb(11, 85, 90);
-  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-
+  font-family:'Times New Roman', Times, serif;
 }
+
 
 h3 {
   color: rgb(11, 85, 90);
     font-weight: lighter;
     font-style: italic;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-family:'Times New Roman', Times, serif;
 }
 
 .all {
