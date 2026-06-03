@@ -68,6 +68,10 @@ def add_to_stats(answered, correct, incorrect):
         connection.close()
 
 
+def record_answer_stats(is_correct):
+    add_to_stats(1, 1 if is_correct else 0, 0 if is_correct else 1)
+
+
 def get_account_stats():
     user_id = session.get("user_id")
     if not user_id:
@@ -233,6 +237,8 @@ def subtraction():
                 )
             user_answer = int(user_answer_str)
             correct_answer = a - b
+            is_correct = user_answer == correct_answer
+            record_answer_stats(is_correct)
 
             # Record result
             results = session.get("results", [])
@@ -240,7 +246,7 @@ def subtraction():
                 "problem": f"{a} - {b} = ?",
                 "your_answer": user_answer,
                 "correct_answer": correct_answer,
-                "status": "Correct" if user_answer == correct_answer else "Incorrect"
+                "status": "Correct" if is_correct else "Incorrect"
             })
             session["results"] = results
 
@@ -351,12 +357,14 @@ def index_add():
         cur = session["current"]
         a, b = problems[cur]
         correct = a + b
+        is_correct = user_ans == correct
+        record_answer_stats(is_correct)
 
         session["answers"].append({
             "problem": f"{a} + {b}",
             "your_answer": user_ans,
             "correct_answer": correct,
-            "status": "Correct" if user_ans == correct else "Incorrect"
+            "status": "Correct" if is_correct else "Incorrect"
         })
 
         session["current"] += 1
@@ -437,6 +445,8 @@ def multiplication():
                 )
             user_answer = int(user_answer_str)
             correct_answer = a * b
+            is_correct = user_answer == correct_answer
+            record_answer_stats(is_correct)
 
             # Record result
             results = session.get("results", [])
@@ -444,7 +454,7 @@ def multiplication():
                 "problem": f"{a} × {b} = ?",
                 "your_answer": user_answer,
                 "correct_answer": correct_answer,
-                "status": "Correct" if user_answer == correct_answer else "Incorrect"
+                "status": "Correct" if is_correct else "Incorrect"
             })
             session["results"] = results
 
@@ -531,6 +541,8 @@ def division():
                 )
             user_answer = int(user_answer_str)
             correct_answer = a // b
+            is_correct = user_answer == correct_answer
+            record_answer_stats(is_correct)
 
             # Record result
             results = session.get("results", [])
@@ -538,7 +550,7 @@ def division():
                 "problem": f"{a} ÷ {b} = ?",
                 "your_answer": user_answer,
                 "correct_answer": correct_answer,
-                "status": "Correct" if user_answer == correct_answer else "Incorrect"
+                "status": "Correct" if is_correct else "Incorrect"
             })
             session["results"] = results
 
@@ -600,7 +612,9 @@ def index_all():
 
                 user_answer = int(user_answer_str)
                 correct_answer = session.get('solution')
-                if user_answer == correct_answer:
+                is_correct = user_answer == correct_answer
+                record_answer_stats(is_correct)
+                if is_correct:
                     message = "Correct!"
                 else:
                     message = f"Incorrect. The correct answer was {correct_answer}."
@@ -700,6 +714,8 @@ def format_decimal(value):
 
 
 def format_mixed_number(value, number_type):
+    if number_type == "whole":
+        return str(Fraction(value).numerator)
     if number_type == "decimal":
         return format_decimal(value)
     return format_number(value)
@@ -715,10 +731,18 @@ def parse_decimal_answer(answer_text):
     return Fraction(answer_text.strip())
 
 
+def parse_whole_answer(answer_text):
+    return Fraction(int(answer_text.strip()), 1)
+
+
 def answers_match(user_answer, correct_answer, answer_type):
-    if answer_type == "fraction":
+    if answer_type in ["fraction", "whole"]:
         return user_answer == correct_answer
     return abs(float(user_answer - correct_answer)) < 0.01
+
+
+def generate_whole_operand(max_number):
+    return Fraction(random.randint(0, max_number), 1)
 
 
 def generate_fraction_operand(max_number):
@@ -735,7 +759,9 @@ def generate_decimal_operand(max_number):
 
 def generate_advanced_operand(max_number, number_mode):
     if number_mode == "both":
-        number_mode = random.choice(["fraction", "decimal"])
+        number_mode = random.choice(["fraction", "decimal", "whole"])
+    if number_mode == "whole":
+        return generate_whole_operand(max_number), "whole"
     if number_mode == "decimal":
         return generate_decimal_operand(max_number), "decimal"
     return generate_fraction_operand(max_number), "fraction"
@@ -759,9 +785,20 @@ def generate_advanced_problem(max_number, operations, number_mode):
         symbol = "/"
         while b == 0:
             b, b_type = generate_advanced_operand(max_number, number_mode)
+        if a_type == "whole" and b_type == "whole":
+            answer = generate_whole_operand(max_number)
+            b = generate_whole_operand(max_number)
+            while b == 0:
+                b = generate_whole_operand(max_number)
+            a = answer * b
         answer = a / b
 
-    answer_type = "decimal" if a_type == "decimal" or b_type == "decimal" else "fraction"
+    if a_type == "decimal" or b_type == "decimal":
+        answer_type = "decimal"
+    elif a_type == "fraction" or b_type == "fraction":
+        answer_type = "fraction"
+    else:
+        answer_type = "whole"
     problem_str = f"{format_mixed_number(a, a_type)} {symbol} {format_mixed_number(b, b_type)} = ?"
     return {
         "problem": problem_str,
@@ -813,7 +850,10 @@ def advanced_test():
     correct_answer = Fraction(current_problem["answer"])
 
     if action == "hint":
-        hint_text = f"The answer is about {current_problem['decimal_answer']} as a decimal."
+        if current_problem["answer_type"] == "whole":
+            hint_text = f"The answer is a whole number close to {current_problem['display_answer']}."
+        else:
+            hint_text = f"The answer is about {current_problem['decimal_answer']} as a decimal."
         return render_template(
             "quhack10.html",
             problem=True,
@@ -849,6 +889,18 @@ def advanced_test():
             )
 
         user_answer_str = f"{numerator_str}/{denominator_str}"
+    elif current_problem["answer_type"] == "whole" and "user_answer_whole" in request.form:
+        user_answer_str = request.form.get("user_answer_whole", "").strip()
+        try:
+            user_answer = parse_whole_answer(user_answer_str)
+        except ValueError:
+            return render_template(
+                "quhack10.html",
+                problem=True,
+                problem_str=current_problem["problem"],
+                answer_type=current_problem["answer_type"],
+                message="Enter a valid whole number."
+            )
     else:
         return render_template(
             "quhack10.html",
@@ -857,13 +909,15 @@ def advanced_test():
             answer_type=current_problem["answer_type"]
         )
 
-    if "user_answer_decimal" in request.form or "answer_numerator" in request.form:
+    if "user_answer_decimal" in request.form or "answer_numerator" in request.form or "user_answer_whole" in request.form:
+        is_correct = answers_match(user_answer, correct_answer, current_problem["answer_type"])
+        record_answer_stats(is_correct)
         results = session.get("advanced_results", [])
         results.append({
             "problem": current_problem["problem"],
             "your_answer": user_answer_str,
             "correct_answer": current_problem["display_answer"],
-            "status": "Correct" if answers_match(user_answer, correct_answer, current_problem["answer_type"]) else "Incorrect"
+            "status": "Correct" if is_correct else "Incorrect"
         })
         session["advanced_results"] = results
         session["advanced_current"] += 1
@@ -886,6 +940,12 @@ def parse_test_answer(problem, form_data, index):
         if not answer_text:
             raise ValueError
         return parse_decimal_answer(answer_text), answer_text
+
+    if problem["answer_type"] == "whole":
+        answer_text = form_data.get(f"whole_answer_{index}", "").strip()
+        if not answer_text:
+            raise ValueError
+        return parse_whole_answer(answer_text), answer_text
 
     numerator_text = form_data.get(f"answer_numerator_{index}", "").strip()
     denominator_text = form_data.get(f"answer_denominator_{index}", "").strip()
