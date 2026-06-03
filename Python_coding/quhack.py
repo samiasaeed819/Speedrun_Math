@@ -1,5 +1,6 @@
 import time
 import random
+from fractions import Fraction
 
 # importing Flask and other modules
 from flask import Flask, render_template, request, session, redirect, url_for
@@ -41,6 +42,10 @@ def about():
 @app.route('/quhack9.html')
 def assement():
     return render_template('quhack9.html')
+
+@app.route('/quhack10.html')
+def advanced_random():
+    return render_template('quhack10.html', problem=False)
 
 
 
@@ -572,6 +577,161 @@ def generate_problem_all(max_number):
 def reset_all():
     session.clear()
     return render_template('quhack6.html')
+
+
+#########################################################################################################
+## Fractions and Decimals Randomized Test ###################
+
+def format_number(value):
+    fraction = Fraction(value)
+    if fraction.denominator == 1:
+        return str(fraction.numerator)
+    return f"{fraction.numerator}/{fraction.denominator}"
+
+
+def format_decimal(value):
+    text = f"{float(value):.2f}".rstrip("0").rstrip(".")
+    return text if text else "0"
+
+
+def format_mixed_number(value, number_type):
+    if number_type == "decimal":
+        return format_decimal(value)
+    return format_number(value)
+
+
+def parse_math_answer(answer_text):
+    answer_text = answer_text.strip()
+    if "/" in answer_text:
+        numerator, denominator = answer_text.split("/", 1)
+        return Fraction(int(numerator.strip()), int(denominator.strip()))
+    return Fraction(answer_text)
+
+
+def answers_match(user_answer, correct_answer):
+    return abs(float(user_answer - correct_answer)) < 0.01
+
+
+def generate_fraction_operand(max_number):
+    denominator = random.randint(2, 10)
+    numerator = random.randint(1, max_number * denominator)
+    return Fraction(numerator, denominator)
+
+
+def generate_decimal_operand(max_number):
+    decimal_places = random.choice([1, 2])
+    scale = 10 ** decimal_places
+    return Fraction(random.randint(1, max_number * scale), scale)
+
+
+def generate_advanced_operand(max_number, number_mode):
+    if number_mode == "both":
+        number_mode = random.choice(["fraction", "decimal"])
+    if number_mode == "decimal":
+        return generate_decimal_operand(max_number), "decimal"
+    return generate_fraction_operand(max_number), "fraction"
+
+
+def generate_advanced_problem(max_number, operations, number_mode):
+    operation = random.choice(operations)
+    a, a_type = generate_advanced_operand(max_number, number_mode)
+    b, b_type = generate_advanced_operand(max_number, number_mode)
+
+    if operation == "addition":
+        symbol = "+"
+        answer = a + b
+    elif operation == "subtraction":
+        symbol = "-"
+        answer = a - b
+    elif operation == "multiplication":
+        symbol = "x"
+        answer = a * b
+    else:
+        symbol = "/"
+        while b == 0:
+            b, b_type = generate_advanced_operand(max_number, number_mode)
+        answer = a / b
+
+    problem_str = f"{format_mixed_number(a, a_type)} {symbol} {format_mixed_number(b, b_type)} = ?"
+    return {
+        "problem": problem_str,
+        "answer": str(answer),
+        "display_answer": format_number(answer),
+        "decimal_answer": format_decimal(answer)
+    }
+
+
+@app.route('/advanced', methods=["GET", "POST"])
+def advanced_test():
+    if request.method == "GET":
+        return render_template("quhack10.html", problem=False)
+
+    action = request.form.get("action", "")
+
+    if "max_number" in request.form and "num_questions" in request.form:
+        max_str = request.form.get("max_number", "").strip()
+        count_str = request.form.get("num_questions", "").strip()
+        number_mode = request.form.get("number_mode", "both")
+        operations = request.form.getlist("operations")
+
+        if "all" in operations:
+            operations = ["addition", "subtraction", "multiplication", "division"]
+
+        if not max_str.isdigit() or not count_str.isdigit():
+            return render_template("quhack10.html", problem=False, message="Please enter valid numbers.")
+
+        if not operations:
+            return render_template("quhack10.html", problem=False, message="Please choose at least one operation.")
+
+        max_number = int(max_str)
+        total_questions = int(count_str)
+
+        if max_number < 1 or total_questions < 1:
+            return render_template("quhack10.html", problem=False, message="Please enter numbers greater than 0.")
+
+        problems = [generate_advanced_problem(max_number, operations, number_mode) for _ in range(total_questions)]
+        session["advanced_problems"] = problems
+        session["advanced_current"] = 0
+        session["advanced_results"] = []
+        session["advanced_total"] = total_questions
+
+    if "advanced_problems" not in session or session["advanced_current"] >= len(session["advanced_problems"]):
+        return render_template("quhack10.html", problem=False, results=session.get("advanced_results", []))
+
+    current_problem = session["advanced_problems"][session["advanced_current"]]
+    correct_answer = Fraction(current_problem["answer"])
+
+    if action == "hint":
+        hint_text = f"The answer is about {current_problem['decimal_answer']} as a decimal."
+        return render_template("quhack10.html", problem=True, problem_str=current_problem["problem"], hint=hint_text)
+
+    if "user_answer" in request.form:
+        user_answer_str = request.form.get("user_answer", "").strip()
+        try:
+            user_answer = parse_math_answer(user_answer_str)
+        except (ValueError, ZeroDivisionError):
+            return render_template(
+                "quhack10.html",
+                problem=True,
+                problem_str=current_problem["problem"],
+                message="Enter a valid fraction or decimal."
+            )
+
+        results = session.get("advanced_results", [])
+        results.append({
+            "problem": current_problem["problem"],
+            "your_answer": user_answer_str,
+            "correct_answer": current_problem["display_answer"],
+            "status": "Correct" if answers_match(user_answer, correct_answer) else "Incorrect"
+        })
+        session["advanced_results"] = results
+        session["advanced_current"] += 1
+
+        if session["advanced_current"] >= session["advanced_total"]:
+            return render_template("quhack10.html", problem=False, results=results)
+
+    current_problem = session["advanced_problems"][session["advanced_current"]]
+    return render_template("quhack10.html", problem=True, problem_str=current_problem["problem"])
 
 
 

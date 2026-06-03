@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Speedrun Math - Division</title>
+    <title>Speedrun Math - Fractions and Decimals</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='quhack.css') }}">
     <script src="extra.js"></script>
 
@@ -10,23 +10,23 @@
         <a href="quhack2.html">Addition</a>
         <a href="quhack3.html">Subtraction</a>
         <a href="quhack4.html">Multiplication</a>
-        <a class="active" href="quhack5.html">Division</a>
+        <a href="quhack5.html">Division</a>
         <a href="quhack6.html">Mixed</a>
         <a href="quhack9.html">Self Assessment</a>
-        <a href="quhack10.html">Fractions/Decimals</a>
+        <a class="active" href="quhack10.html">Fractions/Decimals</a>
         <a href="quhack7.html">About</a>
     </div>
 </head>
 <body>
 <div class="all">
-    <h1>Simple Division Practice</h1>
+    <h1>Random Fraction and Decimal Practice</h1>
 
-    {% if problem_str %}
+    {% if problem %}
         <h1 class="h1">Problem: {{ problem_str }}</h1>
 
-        <form method="POST" action="/div">
-            <input class="btn1"  type="text" name="user_answer" placeholder="Your answer here" />
-            <button class="submit" type="submit">Check</button>
+        <form method="POST" action="/advanced">
+            <input class="btn1" type="text" name="user_answer" placeholder="Your answer here" />
+            <button class="submit" type="submit" name="action" value="check">Check</button>
             <button class="submit" type="submit" name="action" value="hint">Hint</button>
         </form>
 
@@ -57,22 +57,46 @@
                 {% endfor %}
             </table>
             <br>
-            <a href="/div"><button class="submit">Start Over</button></a>
+            <a href="quhack10.html"><button class="submit">Start Over</button></a>
 
         {% else %}
-            <form method="POST" action="/div">
-                <label for="max_number">Enter the maximum number:</label>
-                <input  class="btn1" type="text" name="max_number" placeholder="e.g., 10" required />
+            {% if message %}
+                <p style="color:rgb(157, 198, 201);">{{ message }}</p>
+            {% endif %}
+
+            <form method="POST" action="/advanced">
+                <label>Enter the maximum number:</label>
+                <input class="btn1" type="text" name="max_number" placeholder="e.g., 10" required />
+
                 <br><br>
-                <label for="num_questions">How many questions?</label>
-                <input class="btn1" type="text" name="num_questions" id="num_questions" placeholder="e.g., 5" required />
+
+                <label>How many questions?</label>
+                <input class="btn1" type="text" name="num_questions" placeholder="e.g., 5" required />
+
+                <br><br>
+
+                <h2>Choose Operations</h2>
+                <input type="checkbox" name="operations" value="addition"><label>Addition</label>
+                <input type="checkbox" name="operations" value="subtraction"><label>Subtraction</label>
+                <input type="checkbox" name="operations" value="multiplication"><label>Multiplication</label>
+                <input type="checkbox" name="operations" value="division"><label>Division</label>
+                <input type="checkbox" name="operations" value="all"><label>All 4</label>
+
+                <br><br>
+
+                <h2>Choose Number Type</h2>
+                <input type="radio" name="number_mode" value="fraction" required><label>Fractions</label>
+                <input type="radio" name="number_mode" value="decimal"><label>Decimals</label>
+                <input type="radio" name="number_mode" value="both"><label>Both</label>
+
                 <br><br>
                 <button class="submit" type="submit">Start</button>
             </form>
         {% endif %}
     {% endif %}
-                <img src="{{ url_for('static', filename='division.png') }}">
-            <br><br><br><br>
+
+    <img src="{{ url_for('static', filename='equal.png') }}">
+    <br><br><br><br>
 </div>
 <div class="credits">
     <p>Website Made By: Samia Saeed and Tanvi Saha</p>
