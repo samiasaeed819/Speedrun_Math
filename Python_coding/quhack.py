@@ -600,12 +600,10 @@ def format_mixed_number(value, number_type):
     return format_number(value)
 
 
-def parse_math_answer(answer_text):
-    answer_text = answer_text.strip()
-    if "/" in answer_text:
-        numerator, denominator = answer_text.split("/", 1)
-        return Fraction(int(numerator.strip()), int(denominator.strip()))
-    return Fraction(answer_text)
+def parse_fraction_answer(numerator_text, denominator_text):
+    numerator = int(numerator_text.strip())
+    denominator = int(denominator_text.strip())
+    return Fraction(numerator, denominator)
 
 
 def answers_match(user_answer, correct_answer):
@@ -705,18 +703,20 @@ def advanced_test():
         hint_text = f"The answer is about {current_problem['decimal_answer']} as a decimal."
         return render_template("quhack10.html", problem=True, problem_str=current_problem["problem"], hint=hint_text)
 
-    if "user_answer" in request.form:
-        user_answer_str = request.form.get("user_answer", "").strip()
+    if "answer_numerator" in request.form and "answer_denominator" in request.form:
+        numerator_str = request.form.get("answer_numerator", "").strip()
+        denominator_str = request.form.get("answer_denominator", "").strip()
         try:
-            user_answer = parse_math_answer(user_answer_str)
+            user_answer = parse_fraction_answer(numerator_str, denominator_str)
         except (ValueError, ZeroDivisionError):
             return render_template(
                 "quhack10.html",
                 problem=True,
                 problem_str=current_problem["problem"],
-                message="Enter a valid fraction or decimal."
+                message="Enter a valid numerator and denominator."
             )
 
+        user_answer_str = f"{numerator_str}/{denominator_str}"
         results = session.get("advanced_results", [])
         results.append({
             "problem": current_problem["problem"],

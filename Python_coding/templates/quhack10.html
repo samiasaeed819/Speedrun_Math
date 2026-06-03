@@ -19,15 +19,19 @@
 </head>
 <body>
 <div class="all">
-    <h1>Random Fraction and Decimal Practice</h1>
+    <h1>Fraction and Decimal Practice</h1>
 
     {% if problem %}
         <h1 class="h1">Problem: {{ problem_str }}</h1>
 
         <form method="POST" action="/advanced">
-            <input class="btn1" type="text" name="user_answer" placeholder="Your answer here" />
+            <div class="fraction-answer">
+                <input class="btn1 fraction-input" type="text" name="answer_numerator" placeholder="Numerator" required />
+                <div class="fraction-line"></div>
+                <input class="btn1 fraction-input" type="text" name="answer_denominator" placeholder="Denominator" required />
+            </div>
             <button class="submit" type="submit" name="action" value="check">Check</button>
-            <button class="submit" type="submit" name="action" value="hint">Hint</button>
+            <button class="submit" type="submit" name="action" value="hint" formnovalidate>Hint</button>
         </form>
 
         {% if hint %}

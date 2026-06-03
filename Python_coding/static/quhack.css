@@ -180,7 +180,7 @@ h2 {
 
 }
 
-.btn1{
+  .btn1{
     text-align: center;
     border-radius: 15px;
     border: solid 3px #0c3f3a;
@@ -193,6 +193,26 @@ h2 {
     margin-right: auto;
     margin-top: 20px;
     margin-bottom: 20px;
+  }
+
+  .fraction-answer {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    width: 210px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .fraction-input {
+    width: 170px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+
+  .fraction-line {
+    width: 190px;
+    border-top: solid 3px #0c3f3a;
   }
 
   .btn2{
