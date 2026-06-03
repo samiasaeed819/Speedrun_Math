@@ -1,5 +1,5 @@
 body{
-    background-color:#aadde4;
+    background-color:#97cdd2;
     margin-left: 20px;
     margin-right: 20px;
     margin-bottom: 20px;
@@ -40,7 +40,7 @@ body{
 .btn {
     border-radius: 15px;
     border: solid 3px #0c3f3a;
-    background-color: #6dafa9;
+    background-color:  rgb(141, 188, 183);
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     font-style: italic;
     font-weight: bold;
@@ -121,7 +121,7 @@ label {
 .submit {
   border-radius: 15px;
   border: solid 3px rgb(89, 136, 131);
-  background-color: rgb(170, 199, 196);
+  background-color: rgb(168, 211, 207);
   font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   font-style: italic;
   font-weight: bold;
